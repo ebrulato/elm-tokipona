@@ -1,5 +1,8 @@
 # elm-tokipona
 
-Le but de ce repo est de faire un module elm permettant l'analyse et la traduction de texte en tokipona :)
+This package aims to help you in tokipona translation.
+Note that tokipona is a very ambiguous language :)
 
-Il s'agit surtout de s'amuser et d'explorer la création de module elm.
+It supports the lessons
+* lesson 3 Simple http://tokipona.net/tp/janpije/okamasona3.php
+* lesson 4 Simple http://tokipona.net/tp/janpije/okamasona4.php
