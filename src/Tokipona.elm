@@ -517,15 +517,23 @@ findVerb words =
             cutList (\w -> w == word_e) False words
     in
     if not (List.isEmpty verb_e) then
-        List.append (convertWords2Verb True False True verb_e) (findCOD others_e)
+        List.append (convertWords2Verb True False True verb_e) (findCODs others_e)
 
     else
         convertWords2Verb True False False others_e
 
 
-findCOD : List WORD -> List Item
-findCOD words =
-    convertWords2Noun words
+findCODs : List WORD -> List Item
+findCODs words =
+    let
+        ( cod_e, others_e, idx_e ) =
+            cutList (\w -> w == word_e) False words
+    in
+    if not (List.isEmpty cod_e) then
+        List.append (convertWords2Noun cod_e) (And_li :: findCODs others_e)
+
+    else
+        convertWords2Noun words
 
 
 
