@@ -349,6 +349,7 @@ internalTranslate phrase pona =
 
 type Item
     = ItemWord WORD WORD_KIND
+    | And_li
 
 
 itemToString : Bool -> Item -> String
@@ -357,13 +358,8 @@ itemToString pona item =
         ItemWord word wordKind ->
             rawTokiponaToString pona wordKind word
 
-
-type alias Group =
-    { subject : List Item
-    , verb : List Item
-    , cod : List Item
-    , words : List WORD
-    }
+        And_li ->
+            "and"
 
 
 translateTravel : List WORD -> List Item
@@ -373,12 +369,7 @@ translateTravel words =
             singletonAnalyse <| head words
 
         _ ->
-            words
-                |> listWord2Group
-                |> findSubject
-                |> findVerb
-                |> findCOD
-                |> getItems
+            findSubject words
 
 
 singletonAnalyse : Maybe WORD -> List Item
@@ -389,11 +380,6 @@ singletonAnalyse word =
 
         Nothing ->
             []
-
-
-listWord2Group : List WORD -> Group
-listWord2Group words =
-    Group [] [] [] words
 
 
 cutList : (a -> Bool) -> Bool -> List a -> ( List a, List a, Int )
@@ -427,13 +413,13 @@ convertWords2Noun words =
     List.map (\w -> ItemWord w NOUN_KIND) words
 
 
-findSubject : Group -> Group
-findSubject g =
+findSubject : List WORD -> List Item
+findSubject words =
     let
         subject =
-            [ cutList (\w -> w == word_mi) True g.words
-            , cutList (\w -> w == word_sina) True g.words
-            , cutList (\w -> w == word_li) False g.words
+            [ cutList (\w -> w == word_mi) True words
+            , cutList (\w -> w == word_sina) True words
+            , cutList (\w -> w == word_li) False words
             ]
                 |> List.filter (\( _, _, idx ) -> idx > 0)
                 |> List.sortBy (\( _, _, idx ) -> idx)
@@ -441,10 +427,10 @@ findSubject g =
     in
     case subject of
         Just ( s, o, idx ) ->
-            Group (convertWords2Noun s) g.verb g.cod o
+            List.append (convertWords2Noun s) (findVerbs o)
 
         Nothing ->
-            Group (convertWords2Noun g.words) g.verb g.cod []
+            convertWords2Noun words
 
 
 
@@ -511,29 +497,35 @@ convertWords2Verb firstCall mainVerbFounded transitive words =
             []
 
 
-findVerb : Group -> Group
-findVerb g =
+findVerbs : List WORD -> List Item
+findVerbs words =
     let
-        ( verb_e, others_e, idx_e ) =
-            cutList (\w -> w == word_e) False g.words
+        ( verb_li, others_li, idx_li ) =
+            cutList (\w -> w == word_li) False words
     in
-    if not (List.isEmpty verb_e) then
-        Group g.subject (convertWords2Verb True False True verb_e) [] others_e
+    if not (List.isEmpty verb_li) then
+        List.append (findVerb verb_li) (And_li :: findVerbs others_li)
 
     else
-        Group g.subject (convertWords2Verb True False False g.words) [] []
+        findVerb others_li
 
 
-findCOD : Group -> Group
-findCOD g =
-    Group g.subject g.verb (convertWords2Noun g.words) []
+findVerb : List WORD -> List Item
+findVerb words =
+    let
+        ( verb_e, others_e, idx_e ) =
+            cutList (\w -> w == word_e) False words
+    in
+    if not (List.isEmpty verb_e) then
+        List.append (convertWords2Verb True False True verb_e) (findCOD others_e)
+
+    else
+        convertWords2Verb True False False others_e
 
 
-getItems : Group -> List Item
-getItems g =
-    g.cod
-        |> List.append g.verb
-        |> List.append g.subject
+findCOD : List WORD -> List Item
+findCOD words =
+    convertWords2Noun words
 
 
 

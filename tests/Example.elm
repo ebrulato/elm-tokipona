@@ -80,6 +80,9 @@ suite =
             , test "mi pona e ijo" <| \_ -> translate "mi pona e ijo" |> equal "I; me, we, us / to fix; to improve, to repair, to make good / something; anything, stuff, thing, object"
             , test "mi wile lukin e ma" <| \_ -> translate "mi wile lukin e ma" |> equal "I; me, we, us / want; need, wish, have to, must, will, should / to see; to look at, to watch, to read / area; earth, land; outdoor area; world; region, country, territory; soil"
             , test "mi wile pakala e sina" <| \_ -> translate "mi wile pakala e sina" |> equal "I; me, we, us / want; need, wish, have to, must, will, should / to screw up; to ruin, to break, to hurt, to injure, to damage, to destroy / you"
+            , test "pipi li lukin li unpa" <| \_ -> translate "pipi li lukin li unpa" |> equal "bug; insect, ant, spider / to look; to pay attention, to examine, to observe, to read, to watch / and / to have sex"
+            , test "pipi li lukin e mi li unpa e sina" <| \_ -> translate "pipi li lukin e mi li unpa e sina" |> equal "bug; insect, ant, spider / to see; to look at, to watch, to read / I; me, we, us / and / to have sex with; to sleep with, to fuck / you"
+            , test "pipi li wile lukin e mi li wile unpa e sina" <| \_ -> translate "pipi li wile lukin e mi li wile unpa e sina" |> equal "bug; insect, ant, spider / want; need, wish, have to, must, will, should / to see; to look at, to watch, to read / I; me, we, us / and / want; need, wish, have to, must, will, should / to have sex with; to sleep with, to fuck / you"
             ]
         , describe
             "lesson #4 Simple http://tokipona.net/tp/janpije/okamasona4.php"
@@ -103,5 +106,8 @@ suite =
             , test "mi pona e ijo" <| \_ -> translatePona "mi pona e ijo" |> equal "I / to fix / something"
             , test "mi wile lukin e ma" <| \_ -> translatePona "mi wile lukin e ma" |> equal "I / want / to see / area"
             , test "mi wile pakala e sina" <| \_ -> translatePona "mi wile pakala e sina" |> equal "I / want / to screw up / you"
+            , test "pipi li lukin li unpa" <| \_ -> translatePona "pipi li lukin li unpa" |> equal "bug / to look / and / to have sex"
+            , test "pipi li lukin e mi li unpa e sina" <| \_ -> translatePona "pipi li lukin e mi li unpa e sina" |> equal "bug / to see / I / and / to have sex with / you"
+            , test "pipi li wile lukin e mi li wile unpa e sina" <| \_ -> translatePona "pipi li wile lukin e mi li wile unpa e sina" |> equal "bug / want / to see / I / and / want / to have sex with / you"
             ]
         ]
