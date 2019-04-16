@@ -184,4 +184,9 @@ suite =
             , test "jan lili li wile e telo kili." <| \_ -> translateNimiPona "jan lili li wile e telo kili." |> equal "child / to want / fruit juice."
             , test "ona mute li nasa e jan suli." <| \_ -> translateNimiPona "ona mute li nasa e jan suli." |> equal "they / to drive crazy / adult."
             ]
+        , describe
+            "lesson #6 http://tokipona.net/tp/janpije/okamasona6.php"
+            [ test "ike" <| \_ -> translatePona "ike" |> equal "bad"
+            , test "jaki" <| \_ -> translatePona "jaki" |> equal "dirty"
+            ]
         ]
