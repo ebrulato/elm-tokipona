@@ -19,8 +19,8 @@ firstPos v l =
     p
 
 
-cutList : (a -> Bool) -> Bool -> List a -> ( List a, List a, Int )
-cutList f keep l =
+cutList : (a -> Bool) -> Bool -> Bool -> List a -> ( List a, List a, Int )
+cutList f keep after l =
     let
         ( idx, pos ) =
             List.foldl
@@ -36,7 +36,11 @@ cutList f keep l =
     in
     if idx > 0 then
         if keep then
-            ( List.take idx l, List.drop idx l, idx )
+            if after then
+                ( List.take (idx - 1) l, List.drop (idx - 1) l, idx )
+
+            else
+                ( List.take idx l, List.drop idx l, idx )
 
         else
             ( List.take (idx - 1) l, List.drop idx l, idx )
