@@ -277,5 +277,17 @@ suite =
             , test "mi kama e pakala." <| \_ -> translateNimiPona "mi kama e pakala." |> equal "I / to cause / accident."
             , test "sina kama e ni: mi wile moku" <| \_ -> translateNimiPona "sina kama e ni: mi wile moku" |> equal "you / to cause / this, that: I / want / to ingest"
             , test "mi kama jo e telo" <| \_ -> translateNimiPona "mi kama jo e telo" |> equal "I / going to / to have / water"
+            , test "mi pona e ilo suno kepeken ilo lili" <| \_ -> translateNimiPona "mi pona e ilo suno kepeken ilo lili" |> equal "I / to fix / flashlight / with / tool / small"
+            , test "toki pona li pona tawa mi" <| \_ -> translateNimiPona "toki pona li pona tawa mi" |> equal "language / good / to be good / to|for / I"
+            , test "mi mute li pana e moku tawa ona mute" <| \_ -> translateNimiPona "mi mute li pana e moku tawa ona mute" |> equal "we / to give / food / to|for / they"
+            , test "ni li tawa jan pona mi" <| \_ -> translateNimiPona "ni li tawa jan pona mi" |> equal "this, that / to go to / friend / my"
+            , test "ilo li lon poki" <| \_ -> translateNimiPona "ilo li lon poki" |> equal "tool / to be in|at|on / container"
+            , test "poki ni li lon jaki" <| \_ -> translateNimiPona "poki ni li lon jaki" |> equal "container / this, that / to be in|at|on / dirt"
+            , test "mi wile tawa tomo ona kepeken tomo tawa mi" <| \_ -> translateNimiPona "mi wile tawa tomo ona kepeken tomo tawa mi" |> equal "I / want / to go to / house / his, her, its / with / car / my"
+            , test "ona mute li utala toki" <| \_ -> translateNimiPona "ona mute li utala toki" |> equal "they / to argue"
+            , test "sina wile kama tawa tomo toki." <| \_ -> translateNimiPona "sina wile kama tawa tomo toki." |> equal "you / want / to come / to|for / chat room."
+            , test "jan li toki kepeken toki pona lon tomo toki." <| \_ -> translateNimiPona "jan li toki kepeken toki pona lon tomo toki." |> equal "people / to talk / with / language / good / in|at|on / chat room."
+            , test "mi tawa tomo toki. ona li pona tawa mi." <| \_ -> translateNimiPona "mi tawa tomo toki. ona li pona tawa mi." |> equal "I / to go to / chat room. he, she, it / to be good / to|for / I."
+            , test "sina kama jo e jan pona lon ni." <| \_ -> translateNimiPona "sina kama jo e jan pona lon ni." |> equal "you / going to / to have / friend / in|at|on / this, that."
             ]
         ]

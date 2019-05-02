@@ -192,6 +192,8 @@ tokiponaLipu =
         , ( "tomo tawa telo", WORD "tomo tawa telo" NOUN_KIND (NOUN "boat") NO_PRE_VERB BE (VERB_TRANSITIVE "to transform as a boat") ADJ NO_ADVERB NO_NUMERAL NO_PREP )
         , ( "tomo tawa kon", WORD "tomo tawa kon" NOUN_KIND (NOUN "airplane; helicopter, air air vehicle") NO_PRE_VERB BE (VERB_TRANSITIVE "to transform as an air vehicle") ADJ NO_ADVERB NO_NUMERAL NO_PREP )
         , ( "tomo telo", WORD "tomo telo" NOUN_KIND (NOUN "restroom") NO_PRE_VERB (VERB "to be a restroom") (VERB_TRANSITIVE "to transform as a restroom") ADJ NO_ADVERB NO_NUMERAL NO_PREP )
+        , ( "tomo toki", WORD "tomo toki" NOUN_KIND (NOUN "chat room") NO_PRE_VERB BE (VERB_TRANSITIVE "to make a chat room with") ADJ NO_ADVERB NO_NUMERAL NO_PREP )
+        , ( "utala toki", WORD "utala toki" NOUN_KIND (NOUN "an argue") NO_PRE_VERB (VERB "to argue") (VERB_TRANSITIVE "to argue; to argue that, to argue") ADJ NO_ADVERB NO_NUMERAL NO_PREP )
         ]
 
 
