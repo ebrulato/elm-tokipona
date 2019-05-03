@@ -13,3 +13,5 @@ It supports :
 If we have these pattern:
   * ***(wile or kama) (preposition)*** => *wile* or *kama* must be a pre verb and the preposition is nearly a standard verb, where the adverbs are some nouns.
   * ***(lukin) (preposition)*** => *lukin* must be a verb and the preposition is really a preposition
+  
+* lesson 7 Simple http://tokipona.net/tp/janpije/okamasona7.php
