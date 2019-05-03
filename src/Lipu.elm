@@ -121,7 +121,7 @@ tokiponaWords =
         , ( "ni", WORD "ni" NOUN_KIND (NOUN "this, that") NO_PRE_VERB BE NO_VERB_TRANSITIVE (ADJECTIVE "this, that") NO_ADVERB NO_NUMERAL NO_PREP )
         , ( "ona", WORD "ona" NOUN_KIND (NOUN "he, she, it") NO_PRE_VERB BE NO_VERB_TRANSITIVE (ADJECTIVE "his, her, its") NO_ADVERB NO_NUMERAL NO_PREP )
         , ( "pipi", WORD "pipi" NOUN_KIND (NOUN "insect; bug, ant, spider") NO_PRE_VERB BE NO_VERB_TRANSITIVE ADJ ADV NO_NUMERAL NO_PREP )
-        , ( "ma", WORD "ma" NOUN_KIND (NOUN "area; earth, land; outdoor area; world; region, country, territory; soil") NO_PRE_VERB BE NO_VERB_TRANSITIVE (ADJECTIVE "countrified; outdoor, alfresco, open-air") NO_ADVERB NO_NUMERAL NO_PREP )
+        , ( "ma", WORD "ma" NOUN_KIND (NOUN "land; earth, area; outdoor area; world; region, country, territory; soil") NO_PRE_VERB BE NO_VERB_TRANSITIVE (ADJECTIVE "countrified; outdoor, alfresco, open-air") NO_ADVERB NO_NUMERAL NO_PREP )
         , ( "ijo", WORD "ijo" NOUN_KIND (NOUN "something; anything, stuff, thing, object") NO_PRE_VERB BE (VERB_TRANSITIVE "to objectify") (ADJECTIVE "of something") (ADVERB "of something") NO_NUMERAL NO_PREP )
         , ( "jo", WORD "jo" VERB_TRANSITIVE_KIND (NOUN "possession; having, content") NO_PRE_VERB BE (VERB_TRANSITIVE "to have; to carry, contain, hold") (ADJECTIVE "private; personal") (ADVERB "private; personal") NO_NUMERAL NO_PREP )
         , ( "lukin", WORD "lukin" VERB_KIND (NOUN "view; look, glance, sight, gaze, glimpse, seeing, vision") (PRE_VERB "to seek to; look for, try to") (VERB "to look; to pay attention, to examine, to observe, to read, to watch") (VERB_TRANSITIVE "to see; to look at, to watch, to read") (ADJECTIVE "visual(ly)") (ADVERB "visual(ly)") NO_NUMERAL NO_PREP )
@@ -159,9 +159,21 @@ tokiponaWords =
         , ( "poki", WORD "poki" NOUN_KIND (NOUN "container; box, bowl, cup, glass") NO_PRE_VERB (VERB "to put in; to box up, to can, to bottle") (VERB_TRANSITIVE "to put in; to box up, to can, to bottle") (ADJECTIVE "restrained; subdued") (ADVERB "restrainedly") NO_NUMERAL NO_PREP )
 
         -- TODO toki! hello, hi, good morning
-        , ( "toki", WORD "toki" NOUN_KIND (NOUN "language; speech, tongue, lingo, jargon") NO_PRE_VERB (VERB "to talk; to chat, to communicate") (VERB_TRANSITIVE "to speak; to talk, to say, to pronounce, to discourse") (ADJECTIVE "speaking; eloquent, linguistic, verbal, grammatical") (ADVERB "speakingly; eloquently, linguistically, verbally, grammatically") NO_NUMERAL NO_PREP )
+        , ( "toki", WORD "toki" NOUN_KIND (NOUN "language; speech, tongue, lingo, jargon, hello, hi") NO_PRE_VERB (VERB "to talk; to chat, to communicate") (VERB_TRANSITIVE "to speak; to talk, to say, to pronounce, to discourse") (ADJECTIVE "speaking; eloquent, linguistic, verbal, grammatical") (ADVERB "speakingly; eloquently, linguistically, verbally, grammatically") NO_NUMERAL NO_PREP )
         , ( "tawa", WORD "tawa" VERB_KIND (NOUN "movement; transportation") NO_PRE_VERB (VERB "to go to; to walk, to travel, to move, to leave") (VERB_TRANSITIVE "to move; to displace") (ADJECTIVE "moving; mobile") (ADVERB "mobilely") NO_NUMERAL (PREPOSITION "to|for; in order to, towards, until") )
+
+        -- lesson #7
+        , ( "anpa", WORD "anpa" NOUN_KIND (NOUN "bottom; lower part, under, below, floor, beneath, ground") NO_PRE_VERB (VERB "to prostrate oneself") (VERB_TRANSITIVE "to defeat; to beat, to vanquish, to conquer, to enslave") (ADJECTIVE "low; lower, bottom, down") (ADVERB "deeply; downstairs, below, deep, low") NO_NUMERAL NO_PREP )
+        , ( "insa", WORD "insa" NOUN_KIND (NOUN "inside; inner world, centre, stomach") NO_PRE_VERB BE (VERB_TRANSITIVE "to put inside") (ADJECTIVE "inner; internal") (ADVERB "internally; innerly") NO_NUMERAL NO_PREP )
+        , ( "monsi", WORD "monsi" NOUN_KIND (NOUN "back; rear end, butt, behind") NO_PRE_VERB BE (VERB_TRANSITIVE "to put in the back") (ADJECTIVE "back; rear") (ADVERB "rearly") NO_NUMERAL NO_PREP )
+        , ( "sama", WORD "sama" PREPOSITION_KIND (NOUN "equality; parity, equity, identity, par, sameness") NO_PRE_VERB (VERB "to be like; to be equal") (VERB_TRANSITIVE "to make equal; to equate, to make similar to") (ADJECTIVE "same; similar, equal, of equal status or position") (ADVERB "equally; just as, exactly the same, just the same, similarly") NO_NUMERAL (PREPOSITION "like; as, seem") )
+        , ( "tan", WORD "tan" PREPOSITION_KIND (NOUN "origin; cause, reason") NO_PRE_VERB (VERB "to come from; originate from, come out of") (VERB_TRANSITIVE "to put in the origin") (ADJECTIVE "causal") (ADVERB "mobilely") NO_NUMERAL (PREPOSITION "because of; by, from, since") )
+        , ( "poka", WORD "poka" PREPOSITION_KIND (NOUN "side; hip, next to") NO_PRE_VERB BE (VERB_TRANSITIVE "to put aside") (ADJECTIVE "neighbouring") (ADVERB "nearby") NO_NUMERAL (PREPOSITION "with; in the accompaniment of") )
         ]
+
+
+
+{- -}
 
 
 tokiponaLipu : Dict String WORD
@@ -177,12 +189,19 @@ tokiponaLipu =
         , ( "jan sewi", WORD "jan sewi" NOUN_KIND (NOUN "clergyman; god") NO_PRE_VERB (VERB "to be a clergyman") (VERB_TRANSITIVE "to ordain as a clergyman") (ADJECTIVE "as a clergyman") (ADVERB "as a clergyman") NO_NUMERAL NO_PREP )
         , ( "jan suli", WORD "jan suli" NOUN_KIND (NOUN "adult") NO_PRE_VERB (VERB "to be an adult") (VERB_TRANSITIVE "to raise as an adult") (ADJECTIVE "adultly") (ADVERB "adultly") NO_NUMERAL NO_PREP )
         , ( "jan unpa", WORD "jan unpa" NOUN_KIND (NOUN "lover") NO_PRE_VERB (VERB "to be a lover") (VERB_TRANSITIVE "to make a lover of") (ADJECTIVE "as a lover") (ADVERB "as a lover") NO_NUMERAL NO_PREP )
-        , ( "jan utala", WORD "jan utala" NOUN_KIND (NOUN "soldier") NO_PRE_VERB (VERB "to be a soldier") (VERB_TRANSITIVE "to make a soldier of") (ADJECTIVE "soldiery") (ADVERB "soldiery") NO_NUMERAL NO_PREP )
+        , ( "jan utala", WORD "jan utala" NOUN_KIND (NOUN "soldier; warrior") NO_PRE_VERB (VERB "to be a soldier") (VERB_TRANSITIVE "to make a soldier of") (ADJECTIVE "soldiery") (ADVERB "soldiery") NO_NUMERAL NO_PREP )
+        , ( "jan sama", WORD "jan sama" NOUN_KIND (NOUN "sibling") NO_PRE_VERB (VERB "to be a siblings") (VERB_TRANSITIVE "to make a siblings of") (ADJECTIVE "fraternal") (ADVERB "fraternally") NO_NUMERAL NO_PREP )
+        , ( "lon anpa", WORD "lon anpa" PRE_VERB_KIND AS_NOUN NO_PRE_VERB (VERB "to be underneath") (VERB_TRANSITIVE "to put underneath") ADJ (ADVERB "underneathly") NO_NUMERAL (PREPOSITION "underneath") )
+        , ( "lon insa", WORD "lon insa" PRE_VERB_KIND AS_NOUN NO_PRE_VERB (VERB "to be inside") (VERB_TRANSITIVE "to put inside") ADJ (ADVERB "internally") NO_NUMERAL (PREPOSITION "in") )
+        , ( "lon monsi", WORD "lon monsi" PRE_VERB_KIND AS_NOUN NO_PRE_VERB (VERB "to be behind") (VERB_TRANSITIVE "to put behind") ADJ (ADVERB "behindly") NO_NUMERAL (PREPOSITION "behind") )
+        , ( "lon poka", WORD "lon poka" PRE_VERB_KIND AS_NOUN NO_PRE_VERB (VERB "to be nearby") (VERB_TRANSITIVE "to put aside") ADJ (ADVERB "nearby") NO_NUMERAL (PREPOSITION "beside; nearby, with") )
+        , ( "lon sewi", WORD "lon sewi" PRE_VERB_KIND AS_NOUN NO_PRE_VERB (VERB "to be above") (VERB_TRANSITIVE "to put above") ADJ (ADVERB "above") NO_NUMERAL (PREPOSITION "above") )
         , ( "ma tomo", WORD "ma tomo" NOUN_KIND (NOUN "town; city") NO_PRE_VERB (VERB "to be a town") (VERB_TRANSITIVE "to make a town with") ADJ NO_ADVERB NO_NUMERAL NO_PREP )
         , ( "ma telo", WORD "ma telo" NOUN_KIND (NOUN "lake; mud, swamp") NO_PRE_VERB (VERB "to be a lake") (VERB_TRANSITIVE "to transform as a lake, mud, swamp") ADJ NO_ADVERB NO_NUMERAL NO_PREP )
         , ( "mi mute", WORD "mi mute" NOUN_KIND (NOUN "we") NO_PRE_VERB (VERB "to be us") NO_VERB_TRANSITIVE (ADJECTIVE "our") (ADVERB "us") NO_NUMERAL NO_PREP )
         , ( "moku lili", WORD "moku lili" NOUN_KIND (NOUN "nibbling") NO_PRE_VERB (VERB "to nibble") (VERB_TRANSITIVE "to nibble") (ADJECTIVE "nibbled") (ADVERB "nibbling") NO_NUMERAL NO_PREP )
         , ( "ona mute", WORD "ona mute" NOUN_KIND (NOUN "they") NO_PRE_VERB (VERB "to be them") NO_VERB_TRANSITIVE (ADJECTIVE "their") (ADVERB "them") NO_NUMERAL NO_PREP )
+        , ( "poki moku", WORD "poki moku" ADJECTIVE_KIND (NOUN "bowl|cup") NO_PRE_VERB (VERB "to be a bow|cup") (VERB_TRANSITIVE "to make a bow|cup with") ADJ NO_ADVERB NO_NUMERAL NO_PREP )
         , ( "pona lukin", WORD "pona lukin" ADJECTIVE_KIND (NOUN "beauty") NO_PRE_VERB (VERB "to be beautiful") (VERB_TRANSITIVE "to make beautyful") (ADJECTIVE "beautyful") (ADVERB "beautifully") NO_NUMERAL NO_PREP )
         , ( "sewi kiwen", WORD "sewi kiwen" NOUN_KIND (NOUN "top of the rock") NO_PRE_VERB BE (VERB_TRANSITIVE "to transform as a top of the rock") ADJ ADV NO_NUMERAL NO_PREP )
         , ( "telo kili", WORD "telo kili" NOUN_KIND (NOUN "fruit juice") NO_PRE_VERB (VERB "to be a fruit juice") (VERB_TRANSITIVE "to transform as a fruit juice") (ADJECTIVE "fruity") (ADVERB "fruity") NO_NUMERAL NO_PREP )
