@@ -17,4 +17,4 @@ If we have these pattern:
 
 * lesson 7 http://tokipona.net/tp/janpije/okamasona7.php
 * lesson 8 http://tokipona.net/tp/janpije/okamasona8.php
-  * ***(preverb) (kepeken)*** => *verb* + *kepeken* as a preposition
+  * ***(preverb) (kepeken)*** => *verb* + *kepeken* as a preposition if there are some ohter word
