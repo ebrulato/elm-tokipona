@@ -16,8 +16,11 @@ module Lipu exposing
     , rawTokiponaToString
     , tokiponaLipu
     , tokiponaWords
+    , word_ala
+    , word_anu
     , word_e
     , word_kama
+    , word_kepeken
     , word_li
     , word_lili
     , word_lukin
@@ -97,6 +100,7 @@ type WORD_KIND
     | GRAMMAR_KIND
     | UNKNOW_KIND
     | PREPOSITION_KIND
+    | LOC_KIND
 
 
 tokiponaWords : Dict String WORD
@@ -107,9 +111,9 @@ tokiponaWords =
         , ( "mi", WORD "mi" NOUN_KIND (NOUN "I; me, we, us") NO_PRE_VERB BE NO_VERB_TRANSITIVE (ADJECTIVE "my; our") ADV NO_NUMERAL NO_PREP )
         , ( "moku", WORD "moku" VERB_KIND (NOUN "food; meal") NO_PRE_VERB (VERB "to ingest; to eat, to drink, to consume, to swallow") (VERB_TRANSITIVE "to ingest; to eat, to drink, to consume, to swallow") (ADJECTIVE "eating") (ADVERB "eating") NO_NUMERAL NO_PREP )
         , ( "sina", WORD "sina" NOUN_KIND (NOUN "you") NO_PRE_VERB (VERB "to be you") NO_VERB_TRANSITIVE (ADJECTIVE "your") ADV NO_NUMERAL NO_PREP )
-        , ( "suli", WORD "suli" ADJECTIVE_KIND (NOUN "size") NO_PRE_VERB BE (VERB_TRANSITIVE "to enlarge, to lengthen") (ADJECTIVE "big; heavy, large, long, tall; important; adult") (ADVERB "big; tall, long, adult, important") NO_NUMERAL NO_PREP )
+        , ( "suli", WORD "suli" ADJECTIVE_KIND (NOUN "size") NO_PRE_VERB (VERB "to be big; to be heavy, large, long, tall; to be important; to be adult") (VERB_TRANSITIVE "to enlarge, to lengthen") (ADJECTIVE "big; heavy, large, long, tall; important; adult") (ADVERB "big; tall, long, adult, important") NO_NUMERAL NO_PREP )
         , ( "suno", WORD "suno" NOUN_KIND (NOUN "sun; light, brightness, glow, radiance, shine; light source") NO_PRE_VERB BE (VERB_TRANSITIVE "to light; to illumine") (ADJECTIVE "sunny; sunnily") (ADVERB "sunny; sunnily") NO_NUMERAL NO_PREP )
-        , ( "telo", WORD "telo" NOUN_KIND (NOUN "water; liquid, fluid, wet substance; beverage; juice, sauce") NO_PRE_VERB BE (VERB_TRANSITIVE "to wash with water; to water,to put water to, to melt, to liquify") (ADJECTIVE "wett; slobbery, moist, damp, humid, sticky, sweaty, dewy, drizzly") (ADVERB "wett; slobbery, moist, damp, humid, sticky, sweaty, dewy, drizzly") NO_NUMERAL NO_PREP )
+        , ( "telo", WORD "telo" NOUN_KIND (NOUN "water; liquid, fluid, wet substance; beverage; juice, sauce") NO_PRE_VERB (VERB "to be wet") (VERB_TRANSITIVE "to wash with water; to water,to put water to, to melt, to liquify") (ADJECTIVE "wett; slobbery, moist, damp, humid, sticky, sweaty, dewy, drizzly") (ADVERB "wett; slobbery, moist, damp, humid, sticky, sweaty, dewy, drizzly") NO_NUMERAL NO_PREP )
 
         -- TODO interjection "pona!" conditional "pona la"
         , ( "pona", WORD "pona" ADJECTIVE_KIND AS_NOUN NO_PRE_VERB (VERB "to be good; to be simple, positive, nice, correct, right, useful; to be friendly, peaceful") (VERB_TRANSITIVE "to fix; to improve, to repair, to make good") (ADJECTIVE "good; simple, positive, nice, correct, right, useful; friendly, peaceful") (ADVERB "well; good, simple, positive, nice, correct, right") NO_NUMERAL NO_PREP )
@@ -118,8 +122,8 @@ tokiponaWords =
         -- lesson #4
         , ( "ilo", WORD "ilo" NOUN_KIND (NOUN "tool; implement, machine, device; thing used for a specific purpose") NO_PRE_VERB BE (VERB_TRANSITIVE "{to hack; to transform something as a tool}") (ADJECTIVE "useful") (ADVERB "usefully") NO_NUMERAL NO_PREP )
         , ( "kili", WORD "kili" NOUN_KIND (NOUN "fruit; vegetable, mushroom") NO_PRE_VERB BE NO_VERB_TRANSITIVE (ADJECTIVE "fruity") (ADVERB "fruity") NO_NUMERAL NO_PREP )
-        , ( "ni", WORD "ni" NOUN_KIND (NOUN "this, that") NO_PRE_VERB BE NO_VERB_TRANSITIVE (ADJECTIVE "this, that") NO_ADVERB NO_NUMERAL NO_PREP )
-        , ( "ona", WORD "ona" NOUN_KIND (NOUN "he, she, it") NO_PRE_VERB BE NO_VERB_TRANSITIVE (ADJECTIVE "his, her, its") NO_ADVERB NO_NUMERAL NO_PREP )
+        , ( "ni", WORD "ni" NOUN_KIND (NOUN "this|that") NO_PRE_VERB BE NO_VERB_TRANSITIVE (ADJECTIVE "this|that") NO_ADVERB NO_NUMERAL NO_PREP )
+        , ( "ona", WORD "ona" NOUN_KIND (NOUN "he|she|it") NO_PRE_VERB BE NO_VERB_TRANSITIVE (ADJECTIVE "his|her|its") NO_ADVERB NO_NUMERAL NO_PREP )
         , ( "pipi", WORD "pipi" NOUN_KIND (NOUN "insect; bug, ant, spider") NO_PRE_VERB BE NO_VERB_TRANSITIVE ADJ ADV NO_NUMERAL NO_PREP )
         , ( "ma", WORD "ma" NOUN_KIND (NOUN "land; earth, area; outdoor area; world; region, country, territory; soil") NO_PRE_VERB BE NO_VERB_TRANSITIVE (ADJECTIVE "countrified; outdoor, alfresco, open-air") NO_ADVERB NO_NUMERAL NO_PREP )
         , ( "ijo", WORD "ijo" NOUN_KIND (NOUN "something; anything, stuff, thing, object") NO_PRE_VERB BE (VERB_TRANSITIVE "to objectify") (ADJECTIVE "of something") (ADVERB "of something") NO_NUMERAL NO_PREP )
@@ -138,7 +142,7 @@ tokiponaWords =
         , ( "ike", WORD "ike" ADJECTIVE_KIND (NOUN "negativity; badness, evil") NO_PRE_VERB (VERB "to be bad; to suck") (VERB_TRANSITIVE "to make bad; to worsen") (ADJECTIVE "bad; negative, wrong, evil, overly complex") (ADVERB "badly; negatively, wrongly, evily, intricately") NO_NUMERAL NO_PREP )
 
         -- TODO interjection "jaki!"
-        , ( "jaki", WORD "jaki" ADJECTIVE_KIND (NOUN "dirt; pollution, garbage, filth, feces") NO_PRE_VERB BE (VERB_TRANSITIVE "to pollute; to dirty") (ADJECTIVE "dirty; gross, filthy, obscene") (ADVERB "dirty; gross, filthy") NO_NUMERAL NO_PREP )
+        , ( "jaki", WORD "jaki" ADJECTIVE_KIND (NOUN "dirt; pollution, garbage, filth, feces") NO_PRE_VERB (VERB "to be dirty") (VERB_TRANSITIVE "to pollute; to dirty") (ADJECTIVE "dirty; gross, filthy, obscene") (ADVERB "dirty; gross, filthy") NO_NUMERAL NO_PREP )
         , ( "lawa", WORD "lawa" ADJECTIVE_KIND (NOUN "head; mind") NO_PRE_VERB BE (VERB_TRANSITIVE "to lead; to control, to rule, to steer") (ADJECTIVE "main; leading, in charge") (ADVERB "main; leading, in charge") NO_NUMERAL NO_PREP )
         , ( "len", WORD "len" NOUN_KIND (NOUN "clothing; cloth, fabric, network, internet") NO_PRE_VERB BE (VERB_TRANSITIVE "to wear; to be dressed, to dress") (ADJECTIVE "dressed; clothed, costumed, dressed up") NO_ADVERB NO_NUMERAL NO_PREP )
         , ( "lili", WORD "lili" ADJECTIVE_KIND (NOUN "smallness; youth, immaturity") NO_PRE_VERB (VERB "to be small; little, young, short") (VERB_TRANSITIVE "to reduce; to shorten, to shrink, to lessen") (ADJECTIVE "small; little, young, a bit, short, few, less") (ADVERB "barely; small little, young, a bit, short, few, less") NO_NUMERAL NO_PREP )
@@ -163,25 +167,43 @@ tokiponaWords =
         , ( "tawa", WORD "tawa" VERB_KIND (NOUN "movement; transportation") NO_PRE_VERB (VERB "to go to; to walk, to travel, to move, to leave") (VERB_TRANSITIVE "to move; to displace") (ADJECTIVE "moving; mobile") (ADVERB "mobilely") NO_NUMERAL (PREPOSITION "to|for; in order to, towards, until") )
 
         -- lesson #7
-        , ( "anpa", WORD "anpa" NOUN_KIND (NOUN "bottom; lower part, under, below, floor, beneath, ground") NO_PRE_VERB (VERB "to prostrate oneself") (VERB_TRANSITIVE "to defeat; to beat, to vanquish, to conquer, to enslave") (ADJECTIVE "low; lower, bottom, down") (ADVERB "deeply; downstairs, below, deep, low") NO_NUMERAL NO_PREP )
-        , ( "insa", WORD "insa" NOUN_KIND (NOUN "inside; inner world, centre, stomach") NO_PRE_VERB BE (VERB_TRANSITIVE "to put inside") (ADJECTIVE "inner; internal") (ADVERB "internally; innerly") NO_NUMERAL NO_PREP )
-        , ( "monsi", WORD "monsi" NOUN_KIND (NOUN "back; rear end, butt, behind") NO_PRE_VERB BE (VERB_TRANSITIVE "to put in the back") (ADJECTIVE "back; rear") (ADVERB "rearly") NO_NUMERAL NO_PREP )
+        , ( "anpa", WORD "anpa" LOC_KIND (NOUN "bottom; lower part, under, below, floor, beneath, ground") NO_PRE_VERB (VERB "to prostrate oneself") (VERB_TRANSITIVE "to defeat; to beat, to vanquish, to conquer, to enslave") (ADJECTIVE "low; lower, bottom, down") (ADVERB "deeply; downstairs, below, deep, low") NO_NUMERAL (PREPOSITION "bottom; beneath") )
+        , ( "insa", WORD "insa" LOC_KIND (NOUN "inside; inner world, centre, stomach") NO_PRE_VERB BE (VERB_TRANSITIVE "to put inside") (ADJECTIVE "inner; internal") (ADVERB "internally; innerly") NO_NUMERAL (PREPOSITION "inside") )
+        , ( "monsi", WORD "monsi" LOC_KIND (NOUN "back; rear end, butt, behind") NO_PRE_VERB BE (VERB_TRANSITIVE "to put in the back") (ADJECTIVE "back; rear") (ADVERB "rearly") NO_NUMERAL (PREPOSITION "back; behind") )
         , ( "sama", WORD "sama" PREPOSITION_KIND (NOUN "equality; parity, equity, identity, par, sameness") NO_PRE_VERB (VERB "to be like; to be equal") (VERB_TRANSITIVE "to make equal; to equate, to make similar to") (ADJECTIVE "same; similar, equal, of equal status or position") (ADVERB "equally; just as, exactly the same, just the same, similarly") NO_NUMERAL (PREPOSITION "like; as, seem") )
-        , ( "tan", WORD "tan" PREPOSITION_KIND (NOUN "origin; cause, reason") NO_PRE_VERB (VERB "to come from; originate from, come out of") (VERB_TRANSITIVE "to put in the origin") (ADJECTIVE "causal") (ADVERB "mobilely") NO_NUMERAL (PREPOSITION "because of; by, from, since") )
+        , ( "tan", WORD "tan" PREPOSITION_KIND (NOUN "reason; cause, origin") NO_PRE_VERB (VERB "to come from; originate from, come out of") (VERB_TRANSITIVE "to put in the origin") (ADJECTIVE "causal") (ADVERB "mobilely") NO_NUMERAL (PREPOSITION "because of; by, from, since") )
         , ( "poka", WORD "poka" PREPOSITION_KIND (NOUN "side; hip, next to") NO_PRE_VERB BE (VERB_TRANSITIVE "to put aside") (ADJECTIVE "neighbouring") (ADVERB "nearby") NO_NUMERAL (PREPOSITION "with; in the accompaniment of") )
+
+        -- lesson #8
+        -- ala! = no!
+        , ( "ala", WORD "ala" NOUN_KIND (NOUN "nothing; negation, zero") NO_PRE_VERB (VERB "not to be") (VERB_TRANSITIVE "to deny") (ADJECTIVE "none; no, not, un-") (ADVERB "not; don't") (ADJECTIVE_NUMERAL 0) NO_PREP )
+        , ( "ale", WORD "ale" NOUN_KIND (NOUN "everything; anything, life, the universe") NO_PRE_VERB BE (VERB_TRANSITIVE "to be everything") (ADJECTIVE "all; every, complete, whole") (ADVERB "always; forever, evermore, eternally") (ADJECTIVE_NUMERAL 100) NO_PREP )
+        , ( "ali", WORD "ali" NOUN_KIND (NOUN "everything; anything, life, the universe") NO_PRE_VERB BE (VERB_TRANSITIVE "to be everything") (ADJECTIVE "all; every, complete, whole") (ADVERB "always; forever, evermore, eternally") (ADJECTIVE_NUMERAL 100) NO_PREP )
+
+        -- ken la => maybe
+        , ( "ken", WORD "ken" PRE_VERB_KIND (NOUN "possibility; ability, power to do things, permission") (PRE_VERB "can; may") (VERB "is able to; can, is allowed to, may, is possible") (VERB_TRANSITIVE "to make possible; to enable, to allow, to permit") (ADJECTIVE "possible") (ADVERB "possibly") NO_NUMERAL NO_PREP )
+        , ( "lape", WORD "lape" VERB_KIND (NOUN "sleep; rest") NO_PRE_VERB (VERB "to sleep; to rest") (VERB_TRANSITIVE "to knock out; to put someone to sleep") (ADJECTIVE "sleeping; of sleep, dormant") (ADVERB "asleep") NO_NUMERAL NO_PREP )
+        , ( "musi", WORD "musi" VERB_KIND (NOUN "fun; playing, game, recreation, art, entertainment") NO_PRE_VERB (VERB "to have|be fun; to play") (VERB_TRANSITIVE "to amuse; to entertain") (ADJECTIVE "funny; artful, recreational") (ADVERB "cheerfully") NO_NUMERAL NO_PREP )
+        , ( "pali", WORD "pali" VERB_TRANSITIVE_KIND (NOUN "activity; work, deed, project") NO_PRE_VERB (VERB "to work; to act; to function") (VERB_TRANSITIVE "to do; to make, to build, to create") (ADJECTIVE "active; work-related, operating, working") (ADVERB "actively; briskly") NO_NUMERAL NO_PREP )
+        , ( "sona", WORD "sona" VERB_TRANSITIVE_KIND (NOUN "knowledge; wisdom, intelligence, understanding") (PRE_VERB "to know how to") (VERB "to know; to understand") (VERB_TRANSITIVE "to know; to understand, to know how to") (ADJECTIVE "knowing; cognizant, shrewd") (ADVERB "knowing") NO_NUMERAL NO_PREP )
+        , ( "wawa", WORD "wawa" NOUN_KIND (NOUN "energy; strength, power") NO_PRE_VERB (VERB "to be powerful") (VERB_TRANSITIVE "to energize; to strengthen, to empower") (ADJECTIVE "energetic; strong, fierce, intense, sure, confident") (ADVERB "strongly; powerfully") NO_NUMERAL NO_PREP )
+        , ( "anu", PARTICLE "anu" "or" )
         ]
 
 
 
-{- -}
+{-
+
+-}
 
 
 tokiponaLipu : Dict String WORD
 tokiponaLipu =
     fromList
         [ ( "ike lukin", WORD "ike lukin" ADJECTIVE_KIND (NOUN "ugliness") NO_PRE_VERB (VERB "to be ugly") (VERB_TRANSITIVE "to make ugly") (ADJECTIVE "ugly") (ADVERB "basely") NO_NUMERAL NO_PREP )
-        , ( "ilo moku", WORD "ilo moku" NOUN_KIND (NOUN "spoon|fork|knife") NO_PRE_VERB BE (VERB_TRANSITIVE "to make a spoon|fork|knife of") ADJ ADV NO_NUMERAL NO_PREP )
-        , ( "ilo suno", WORD "ilo suno" NOUN_KIND (NOUN "flashlight; lamp, light") NO_PRE_VERB BE (VERB_TRANSITIVE "to make a light of") ADJ ADV NO_NUMERAL NO_PREP )
+        , ( "ilo moku", WORD "ilo moku" NOUN_KIND (NOUN "spoon|fork|knife") NO_PRE_VERB BE (VERB_TRANSITIVE "to make a spoon|fork|knife with") ADJ NO_ADVERB NO_NUMERAL NO_PREP )
+        , ( "ilo suno", WORD "ilo suno" NOUN_KIND (NOUN "flashlight; lamp, light") NO_PRE_VERB BE (VERB_TRANSITIVE "to make a light with") ADJ NO_ADVERB NO_NUMERAL NO_PREP )
+        , ( "jan ala", WORD "jan ala" NOUN_KIND (NOUN "nobody") NO_PRE_VERB (VERB "to be nobody") (VERB_TRANSITIVE "to make nobody with") ADJ NO_ADVERB NO_NUMERAL NO_PREP )
         , ( "jan ike", WORD "jan ike" NOUN_KIND (NOUN "enemy") NO_PRE_VERB (VERB "to be an ennemy") (VERB_TRANSITIVE "to make an enemy of") (ADJECTIVE "inimical") (ADVERB "hostilely") NO_NUMERAL NO_PREP )
         , ( "jan lawa", WORD "jan lawa" NOUN_KIND (NOUN "leader") NO_PRE_VERB (VERB "to be a leader") (VERB_TRANSITIVE "to make a leader of") (ADJECTIVE "leaderly") (ADVERB "leaderly") NO_NUMERAL NO_PREP )
         , ( "jan lili", WORD "jan lili" NOUN_KIND (NOUN "child") NO_PRE_VERB (VERB "to be a child; to be childly") (VERB_TRANSITIVE "to give birth") (ADJECTIVE "childly") (ADVERB "childly") NO_NUMERAL NO_PREP )
@@ -191,6 +213,9 @@ tokiponaLipu =
         , ( "jan unpa", WORD "jan unpa" NOUN_KIND (NOUN "lover") NO_PRE_VERB (VERB "to be a lover") (VERB_TRANSITIVE "to make a lover of") (ADJECTIVE "as a lover") (ADVERB "as a lover") NO_NUMERAL NO_PREP )
         , ( "jan utala", WORD "jan utala" NOUN_KIND (NOUN "soldier; warrior") NO_PRE_VERB (VERB "to be a soldier") (VERB_TRANSITIVE "to make a soldier of") (ADJECTIVE "soldiery") (ADVERB "soldiery") NO_NUMERAL NO_PREP )
         , ( "jan sama", WORD "jan sama" NOUN_KIND (NOUN "sibling") NO_PRE_VERB (VERB "to be a siblings") (VERB_TRANSITIVE "to make a siblings of") (ADJECTIVE "fraternal") (ADVERB "fraternally") NO_NUMERAL NO_PREP )
+        , ( "kama sona", WORD "kama sona" VERB_TRANSITIVE_KIND (NOUN "study") NO_PRE_VERB (VERB "to learn; to study") (VERB_TRANSITIVE "to learn; to study") (ADJECTIVE "studying") (ADVERB "studying") NO_NUMERAL NO_PREP )
+
+        --, ( "ken la", WORD "ken la" CONDITIONAL_KIND AS_NOUN NO_PRE_VERB (VERB "to be underneath") (VERB_TRANSITIVE "to put underneath") ADJ (ADVERB "underneathly") NO_NUMERAL (PREPOSITION "underneath") )
         , ( "lon anpa", WORD "lon anpa" PRE_VERB_KIND AS_NOUN NO_PRE_VERB (VERB "to be underneath") (VERB_TRANSITIVE "to put underneath") ADJ (ADVERB "underneathly") NO_NUMERAL (PREPOSITION "underneath") )
         , ( "lon insa", WORD "lon insa" PRE_VERB_KIND AS_NOUN NO_PRE_VERB (VERB "to be inside") (VERB_TRANSITIVE "to put inside") ADJ (ADVERB "internally") NO_NUMERAL (PREPOSITION "in") )
         , ( "lon monsi", WORD "lon monsi" PRE_VERB_KIND AS_NOUN NO_PRE_VERB (VERB "to be behind") (VERB_TRANSITIVE "to put behind") ADJ (ADVERB "behindly") NO_NUMERAL (PREPOSITION "behind") )
@@ -276,6 +301,18 @@ word_kama =
 
 word_lukin =
     getRawTokipona "lukin"
+
+
+word_ala =
+    getRawTokipona "ala"
+
+
+word_anu =
+    getRawTokipona "anu"
+
+
+word_kepeken =
+    getRawTokipona "kepeken"
 
 
 doPona : Bool -> String -> String
@@ -372,6 +409,14 @@ getDefaultKind pona w =
 
                                 NO_PREP ->
                                     "[ERROR: " ++ tokipona ++ " is not a preposition]"
+
+                        LOC_KIND ->
+                            case noun of
+                                NOUN s ->
+                                    s
+
+                                AS_NOUN ->
+                                    "[ERROR: default kind is LOC but there is no NOUN definition]"
     in
     doPona pona result
 
@@ -451,6 +496,14 @@ rawTokiponaToString pona kind w =
 
                         NO_PREP ->
                             "[ERROR: " ++ tokipona ++ " is not a preposition]"
+
+                LOC_KIND ->
+                    case noun of
+                        NOUN s ->
+                            doPona pona s
+
+                        AS_NOUN ->
+                            "('" ++ getDefaultKind pona w ++ "' as a noun)"
 
 
 getKind : WORD -> WORD_KIND

@@ -17,3 +17,4 @@ If we have these pattern:
   * ***(lukin) (preposition)*** => *lukin* must be a verb and the preposition is really a preposition
 
 * lesson 7 http://tokipona.net/tp/janpije/okamasona7.php
+* lesson 8 http://tokipona.net/tp/janpije/okamasona8.php
