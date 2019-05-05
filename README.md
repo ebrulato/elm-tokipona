@@ -14,7 +14,7 @@ It supports :
 * lesson 6 http://tokipona.net/tp/janpije/okamasona6.php
 If we have these pattern:
   * ***(wile or kama) (preposition)*** => *wile* or *kama* must be a pre verb and the preposition is nearly a standard verb, where the adverbs are some nouns.
-  * ***(lukin) (preposition)*** => *lukin* must be a verb and the preposition is really a preposition
 
 * lesson 7 http://tokipona.net/tp/janpije/okamasona7.php
 * lesson 8 http://tokipona.net/tp/janpije/okamasona8.php
+  * ***(preverb) (kepeken)*** => *verb* + *kepeken* as a preposition
