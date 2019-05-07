@@ -11,8 +11,11 @@ module Lipu exposing
     , VERB_TRANSITIVE(..)
     , WORD(..)
     , WORD_KIND(..)
+    , convertForeign2Word
+    , convertSimple2Word
     , getKind
     , getRawTokipona
+    , getTokipona
     , rawTokiponaToString
     , tokiponaLipu
     , tokiponaWords
@@ -87,6 +90,8 @@ type PREPOSITION
 type WORD
     = WORD TOKIPONA WORD_KIND NOUN PRE_VERB VERB VERB_TRANSITIVE ADJECTIVE ADVERB ADJECTIVE_NUMERAL PREPOSITION
     | PARTICLE TOKIPONA GRAMMAR
+    | SIMPLE TOKIPONA String
+    | FOREIGN TOKIPONA String
     | ERROR String
 
 
@@ -101,6 +106,8 @@ type WORD_KIND
     | UNKNOW_KIND
     | PREPOSITION_KIND
     | LOC_KIND
+    | SIMPLE_KIND
+    | FOREIGN_KIND
 
 
 tokiponaWords : Dict String WORD
@@ -108,9 +115,9 @@ tokiponaWords =
     fromList
         [ -- lesson #3
           ( "jan", WORD "jan" NOUN_KIND (NOUN "people; human, being, person, somebody, anybody") NO_PRE_VERB BE (VERB_TRANSITIVE "to personify; to humanize, to personalize") (ADJECTIVE "somebody’s; human, personal, of people") (ADVERB "human, somebody’s, personal, of people") NO_NUMERAL NO_PREP )
-        , ( "mi", WORD "mi" NOUN_KIND (NOUN "I; me, we, us") NO_PRE_VERB BE NO_VERB_TRANSITIVE (ADJECTIVE "my; our") ADV NO_NUMERAL NO_PREP )
+        , ( "mi", WORD "mi" NOUN_KIND (NOUN "I; me, we, us") NO_PRE_VERB BE NO_VERB_TRANSITIVE (ADJECTIVE "my; our") (ADVERB "my|our") NO_NUMERAL NO_PREP )
         , ( "moku", WORD "moku" VERB_KIND (NOUN "food; meal") NO_PRE_VERB (VERB "to ingest; to eat, to drink, to consume, to swallow") (VERB_TRANSITIVE "to ingest; to eat, to drink, to consume, to swallow") (ADJECTIVE "eating") (ADVERB "eating") NO_NUMERAL NO_PREP )
-        , ( "sina", WORD "sina" NOUN_KIND (NOUN "you") NO_PRE_VERB (VERB "to be you") NO_VERB_TRANSITIVE (ADJECTIVE "your") ADV NO_NUMERAL NO_PREP )
+        , ( "sina", WORD "sina" NOUN_KIND (NOUN "you") NO_PRE_VERB (VERB "to be you") NO_VERB_TRANSITIVE (ADJECTIVE "your") (ADVERB "your") NO_NUMERAL NO_PREP )
         , ( "suli", WORD "suli" ADJECTIVE_KIND (NOUN "size") NO_PRE_VERB (VERB "to be big; to be heavy, large, long, tall; to be important; to be adult") (VERB_TRANSITIVE "to enlarge, to lengthen") (ADJECTIVE "big; heavy, large, long, tall; important; adult") (ADVERB "big; tall, long, adult, important") NO_NUMERAL NO_PREP )
         , ( "suno", WORD "suno" NOUN_KIND (NOUN "sun; light, brightness, glow, radiance, shine; light source") NO_PRE_VERB BE (VERB_TRANSITIVE "to light; to illumine") (ADJECTIVE "sunny; sunnily") (ADVERB "sunny; sunnily") NO_NUMERAL NO_PREP )
         , ( "telo", WORD "telo" NOUN_KIND (NOUN "water; liquid, fluid, wet substance; beverage; juice, sauce") NO_PRE_VERB (VERB "to be wet") (VERB_TRANSITIVE "to wash with water; to water,to put water to, to melt, to liquify") (ADJECTIVE "wett; slobbery, moist, damp, humid, sticky, sweaty, dewy, drizzly") (ADVERB "wett; slobbery, moist, damp, humid, sticky, sweaty, dewy, drizzly") NO_NUMERAL NO_PREP )
@@ -147,7 +154,7 @@ tokiponaWords =
         , ( "len", WORD "len" NOUN_KIND (NOUN "clothing; cloth, fabric, network, internet") NO_PRE_VERB BE (VERB_TRANSITIVE "to wear; to be dressed, to dress") (ADJECTIVE "dressed; clothed, costumed, dressed up") NO_ADVERB NO_NUMERAL NO_PREP )
         , ( "lili", WORD "lili" ADJECTIVE_KIND (NOUN "smallness; youth, immaturity") NO_PRE_VERB (VERB "to be small; little, young, short") (VERB_TRANSITIVE "to reduce; to shorten, to shrink, to lessen") (ADJECTIVE "small; little, young, a bit, short, few, less") (ADVERB "barely; small little, young, a bit, short, few, less") NO_NUMERAL NO_PREP )
         , ( "mute", WORD "mute" ADJECTIVE_KIND (NOUN "amount, quantity") NO_PRE_VERB BE (VERB_TRANSITIVE "to make many or much") (ADJECTIVE "many; very, much, several, a lot, abundant, numerous, more") (ADVERB "many; very, much, several, a lot, abundant, numerous, more") (ADJECTIVE_NUMERAL 20) NO_PREP )
-        , ( "nasa", WORD "nasa" ADJECTIVE_KIND (NOUN "stupidity; foolishness, silliness, nonsense, idiocy, obtuseness, muddler") NO_PRE_VERB BE (VERB_TRANSITIVE "to drive crazy; to make weird") (ADJECTIVE "crazy; silly, foolish, drunk, strange, stupid, weird") (ADVERB "silly; crazy, foolish, drunk, strange, stupid, weird") NO_NUMERAL NO_PREP )
+        , ( "nasa", WORD "nasa" ADJECTIVE_KIND (NOUN "stupidity; foolishness, silliness, nonsense, idiocy, obtuseness, muddler") NO_PRE_VERB (VERB "to be crazy") (VERB_TRANSITIVE "to drive crazy; to make weird") (ADJECTIVE "crazy; silly, foolish, drunk, strange, stupid, weird") (ADVERB "silly; crazy, foolish, drunk, strange, stupid, weird") NO_NUMERAL NO_PREP )
         , ( "seli", WORD "seli" NOUN_KIND (NOUN "fire; warmth, heat") NO_PRE_VERB BE (VERB_TRANSITIVE "to heat; to warm up, to cook") (ADJECTIVE "hot; warm, cooked") (ADVERB "hot; warm, cooked") NO_NUMERAL NO_PREP )
         , ( "sewi", WORD "sewi" ADJECTIVE_KIND (NOUN "high; up, above, top, over, on, sky") NO_PRE_VERB (VERB "to get up") (VERB_TRANSITIVE "to lift") (ADJECTIVE "elevated; superior, religious, formal") (ADVERB "up; superiorly, religiously, elevated, formal") NO_NUMERAL NO_PREP )
         , ( "tomo", WORD "tomo" NOUN_KIND (NOUN "house; home, room, building, indoor constructed space") NO_PRE_VERB BE (VERB_TRANSITIVE "to build; to construct, to engineer") (ADJECTIVE "urban; domestic, household") (ADVERB "urbanly; domestically") NO_NUMERAL NO_PREP )
@@ -188,11 +195,29 @@ tokiponaWords =
         , ( "sona", WORD "sona" VERB_TRANSITIVE_KIND (NOUN "knowledge; wisdom, intelligence, understanding") (PRE_VERB "to know how to") (VERB "to know; to understand") (VERB_TRANSITIVE "to know; to understand, to know how to") (ADJECTIVE "knowing; cognizant, shrewd") (ADVERB "knowing") NO_NUMERAL NO_PREP )
         , ( "wawa", WORD "wawa" NOUN_KIND (NOUN "energy; strength, power") NO_PRE_VERB (VERB "to be powerful") (VERB_TRANSITIVE "to energize; to strengthen, to empower") (ADJECTIVE "energetic; strong, fierce, intense, sure, confident") (ADVERB "strongly; powerfully") NO_NUMERAL NO_PREP )
         , ( "anu", PARTICLE "anu" "or" )
+
+        -- lesson #9
+        -- a a a! => laugh
+        , ( "a", SIMPLE "a" "ah; ha, uh, oh, ooh, aw, well (emotion word)" )
+        , ( "awen", WORD "awen" VERB_KIND (NOUN "inertia; continuity, continuum, stay") NO_PRE_VERB (VERB "to wait; to stay, to remain") (VERB_TRANSITIVE "to keep") (ADJECTIVE "remaining; stationary, permanent, sedentary") (ADVERB "still; yet") NO_NUMERAL NO_PREP )
+        , ( "mama", WORD "mama" NOUN_KIND (NOUN "parent; mother, father") NO_PRE_VERB (VERB "to be a parent") (VERB_TRANSITIVE "to mother somebody; to wet-nurse, mothering") (ADJECTIVE "parental; of the parent, maternal, fatherly, motherly, mumsy") (ADVERB "parentally") NO_NUMERAL NO_PREP )
+        , ( "mije", WORD "mije" NOUN_KIND (NOUN "man; male, husband, boyfriend") NO_PRE_VERB (VERB "to be a man; to be a male|husband|boyfriend") (VERB_TRANSITIVE "to transform somebody as a male") (ADJECTIVE "male; masculine, manly") (ADVERB "manfully") NO_NUMERAL NO_PREP )
+        , ( "meli", WORD "meli" NOUN_KIND (NOUN "woman; female, girl, wife, girlfriend") NO_PRE_VERB (VERB "to be a woman; to be a female|girl|wife|girlfriend") (VERB_TRANSITIVE "to transform somebody as a female") (ADJECTIVE "female; feminine, womanly") (ADVERB "femininely") NO_NUMERAL NO_PREP )
+        , ( "mu", WORD "mu" NOUN_KIND (NOUN "animal noise") NO_PRE_VERB (VERB "to do animal noise") NO_VERB_TRANSITIVE (ADJECTIVE "animal nois-") (ADVERB "animal nois-") NO_NUMERAL NO_PREP )
+        , ( "nimi", WORD "nimi" NOUN_KIND (NOUN "name; word") NO_PRE_VERB (VERB "to be named") (VERB_TRANSITIVE "to name") (ADJECTIVE "named") NO_ADVERB NO_NUMERAL NO_PREP )
+        , ( "o", PARTICLE "o" "used for vocative and imperative" )
         ]
 
 
 
 {-
+
+   o! interjection: hey! (calling somebody’s attention)
+   . . . o, . . . interjection: adressing people
+   o . . . ! subject: An ”o” is used for imperative (commands). ”o” replace the subject.
+   . . . o . . . ! separator : An ”o” is used for imperative (commands): ”o” replace ”li”.
+   Don’t use ”o” before or after the other separators ”e”, ”li”, ”pi”.
+
 
 -}
 
@@ -222,7 +247,475 @@ tokiponaLipu =
         , ( "lon poka", WORD "lon poka" PRE_VERB_KIND AS_NOUN NO_PRE_VERB (VERB "to be nearby") (VERB_TRANSITIVE "to put aside") ADJ (ADVERB "nearby") NO_NUMERAL (PREPOSITION "beside; nearby, with") )
         , ( "lon sewi", WORD "lon sewi" PRE_VERB_KIND AS_NOUN NO_PRE_VERB (VERB "to be above") (VERB_TRANSITIVE "to put above") ADJ (ADVERB "above") NO_NUMERAL (PREPOSITION "above") )
         , ( "ma tomo", WORD "ma tomo" NOUN_KIND (NOUN "town; city") NO_PRE_VERB (VERB "to be a town") (VERB_TRANSITIVE "to make a town with") ADJ NO_ADVERB NO_NUMERAL NO_PREP )
+        , ( "ma tomo lawa", SIMPLE "ma tomo lawa" "capital" )
+
+        -- Towns
+        , ( "ma tomo Solu", SIMPLE "ma tomo Solu" "Seoul" )
+        , ( "ma tomo Asina", SIMPLE "ma tomo Asina" "Athens" )
+        , ( "ma tomo Sakata", SIMPLE "ma tomo Sakata" "Jakarta" )
+        , ( "ma tomo Telawi", SIMPLE "ma tomo Telawi" "Tel Aviv" )
+        , ( "ma tomo Loma", SIMPLE "ma tomo Loma" "Rome" )
+        , ( "ma tomo Milano", SIMPLE "ma tomo Milano" "Milan" )
+        , ( "ma tomo Napoli", SIMPLE "ma tomo Napoli" "Naples" )
+        , ( "ma tomo Pilense", SIMPLE "ma tomo Pilense" "Florence" )
+        , ( "ma tomo Wenesija", SIMPLE "ma tomo Wenesija" "Venice" )
+        , ( "ma tomo Alawa", SIMPLE "ma tomo Alawa" "Ottawa" )
+        , ( "ma tomo Towano", SIMPLE "ma tomo Towano" "Toronto" )
+        , ( "ma tomo Solu", SIMPLE "ma tomo Solu" "Seoul" )
+        , ( "ma tomo Kakawi", SIMPLE "ma tomo Kakawi" "Calgary" )
+        , ( "ma tomo Monkela", SIMPLE "ma tomo Monkela" "Montreal" )
+        , ( "ma tomo Alipasi", SIMPLE "ma tomo Alipasi" "Halifax" )
+        , ( "ma tomo Sensan", SIMPLE "ma tomo Sensan" "St. John’s" )
+        , ( "ma tomo Manten", SIMPLE "ma tomo Manten" "Moncton" )
+        , ( "ma tomo Sawi", SIMPLE "ma tomo Sawi" "Sackville" )
+        , ( "ma tomo Sesija", SIMPLE "ma tomo Sesija" "Shediac" )
+        , ( "ma tomo Sije", SIMPLE "ma tomo Sije" "Dieppe" )
+        , ( "ma tomo Wankuwa", SIMPLE "ma tomo Wankuwa" "Vancouver" )
+        , ( "ma tomo Paki", SIMPLE "ma tomo Paki" "Paris" )
+        , ( "ma tomo Akajela", SIMPLE "ma tomo Akajela" "Cairo" )
+        , ( "ma tomo Mesiko", SIMPLE "ma tomo Mesiko" "Mexico City" )
+        , ( "ma tomo Ele", SIMPLE "ma tomo Ele" "Los Angeles" )
+        , ( "ma tomo Sanpansiko", SIMPLE "ma tomo Sanpansiko" "San Francisco" )
+        , ( "ma tomo Kenpisi", SIMPLE "ma tomo Kenpisi" "Cambridge" )
+        , ( "ma tomo Pasen", SIMPLE "ma tomo Pasen" "Boston" )
+        , ( "ma tomo Nujoka", SIMPLE "ma tomo Nujoka" "New York" )
+        , ( "ma tomo Polan", SIMPLE "ma tomo Polan" "Portland" )
+        , ( "ma tomo Alana", SIMPLE "ma tomo Alana" "Atlanta" )
+        , ( "ma tomo Elena", SIMPLE "ma tomo Elena" "Atlanta" )
+        , ( "ma tomo Putapesi", SIMPLE "ma tomo Putapesi" "Budapest" )
+        , ( "ma tomo Ansetan", SIMPLE "ma tomo Ansetan" "Amsterdam" )
+        , ( "ma tomo Iwesun", SIMPLE "ma tomo Iwesun" "Hilversum" )
+        , ( "ma tomo Osaka", SIMPLE "ma tomo Osaka" "Osaka" )
+        , ( "ma tomo Tokijo", SIMPLE "ma tomo Tokijo" "Tokyo" )
+        , ( "ma tomo Lanten", SIMPLE "ma tomo Lanten" "London" )
+        , ( "ma tomo Lantan", SIMPLE "ma tomo Lantan" "London" )
+        , ( "ma tomo Peminan", SIMPLE "ma tomo Peminan" "Birmingham" )
+        , ( "ma tomo Pesin", SIMPLE "ma tomo Pesin" "Beijing, Peking" )
+        , ( "ma tomo Esupo", SIMPLE "ma tomo Esupo" "Espoo" )
+        , ( "ma tomo Lesinki", SIMPLE "ma tomo Lesinki" "Helsinki" )
+        , ( "ma tomo Tanpele", SIMPLE "ma tomo Tanpele" "Tampere" )
+        , ( "ma tomo Tuku", SIMPLE "ma tomo Tuku" "Turku" )
+        , ( "ma tomo Sene", SIMPLE "ma tomo Sene" "Geneva" )
+        , ( "ma tomo Kunte", SIMPLE "ma tomo Kunte" "Bangkok" )
+        , ( "ma tomo Anpu", SIMPLE "ma tomo Anpu" "Hamburg" )
+        , ( "ma tomo Minsen", SIMPLE "ma tomo Minsen" "Munich" )
+        , ( "ma tomo Pelin", SIMPLE "ma tomo Pelin" "Berlin" )
+        , ( "Solu", FOREIGN "Solu" "Seoul" )
+        , ( "Asina", FOREIGN "Asina" "Athens" )
+        , ( "Sakata", FOREIGN "Sakata" "Jakarta" )
+        , ( "Telawi", FOREIGN "Telawi" "Tel Aviv" )
+        , ( "Loma", FOREIGN "Loma" "Rome" )
+        , ( "Milano", FOREIGN "Milano" "Milan" )
+        , ( "Napoli", FOREIGN "Napoli" "Naples" )
+        , ( "Pilense", FOREIGN "Pilense" "Florence" )
+        , ( "Wenesija", FOREIGN "Wenesija" "Venice" )
+        , ( "Alawa", FOREIGN "Alawa" "Ottawa" )
+        , ( "Towano", FOREIGN "Towano" "Toronto" )
+        , ( "Solu", FOREIGN "Solu" "Seoul" )
+        , ( "Kakawi", FOREIGN "Kakawi" "Calgary" )
+        , ( "Monkela", FOREIGN "Monkela" "Montreal" )
+        , ( "Alipasi", FOREIGN "Alipasi" "Halifax" )
+        , ( "Sensan", FOREIGN "Sensan" "St. John’s" )
+        , ( "Manten", FOREIGN "Manten" "Moncton" )
+        , ( "Sawi", FOREIGN "Sawi" "Sackville" )
+        , ( "Sesija", FOREIGN "Sesija" "Shediac" )
+        , ( "Sije", FOREIGN "Sije" "Dieppe" )
+        , ( "Wankuwa", FOREIGN "Wankuwa" "Vancouver" )
+        , ( "Paki", FOREIGN "Paki" "Paris" )
+        , ( "Akajela", FOREIGN "Akajela" "Cairo" )
+        , ( "Mesiko", FOREIGN "Mesiko" "Mexico City" )
+        , ( "Ele", FOREIGN "Ele" "Los Angeles" )
+        , ( "Sanpansiko", FOREIGN "Sanpansiko" "San Francisco" )
+        , ( "Kenpisi", FOREIGN "Kenpisi" "Cambridge" )
+        , ( "Pasen", FOREIGN "Pasen" "Boston" )
+        , ( "Nujoka", FOREIGN "Nujoka" "New York" )
+        , ( "Polan", FOREIGN "Polan" "Portland" )
+        , ( "Alana", FOREIGN "Alana" "Atlanta" )
+        , ( "Putapesi", FOREIGN "Putapesi" "Budapest" )
+        , ( "Ansetan", FOREIGN "Ansetan" "Amsterdam" )
+        , ( "Iwesun", FOREIGN "Iwesun" "Hilversum" )
+        , ( "Osaka", FOREIGN "Osaka" "Osaka" )
+        , ( "Tokijo", FOREIGN "Tokijo" "Tokyo" )
+        , ( "Lanten", FOREIGN "Lanten" "London" )
+        , ( "Lantan", FOREIGN "Lantan" "London" )
+        , ( "Peminan", FOREIGN "Peminan" "Birmingham" )
+        , ( "Pesin", FOREIGN "Pesin" "Beijing, Peking" )
+        , ( "Esupo", FOREIGN "Esupo" "Espoo" )
+        , ( "Lesinki", FOREIGN "Lesinki" "Helsinki" )
+        , ( "Tanpele", FOREIGN "Tanpele" "Tampere" )
+        , ( "Tuku", FOREIGN "Tuku" "Turku" )
+        , ( "Sene", FOREIGN "Sene" "Geneva" )
+        , ( "Kunte", FOREIGN "Kunte" "Bangkok" )
+        , ( "Anpu", FOREIGN "Anpu" "Hamburg" )
+        , ( "Minsen", FOREIGN "Minsen" "Munich" )
+        , ( "Pelin", FOREIGN "Pelin" "Berlin" )
+
+        -- Other words
         , ( "ma telo", WORD "ma telo" NOUN_KIND (NOUN "lake; mud, swamp") NO_PRE_VERB (VERB "to be a lake") (VERB_TRANSITIVE "to transform as a lake, mud, swamp") ADJ NO_ADVERB NO_NUMERAL NO_PREP )
+
+        -- Continents
+        , ( "ma Amelika", SIMPLE "ma Amelika" "Americas" )
+        , ( "ma Antasika", SIMPLE "ma Amelika" "Antarctica" )
+        , ( "ma Apika", SIMPLE "ma Apika" "Africa" )
+        , ( "ma Asija", SIMPLE "ma Asija" "Asia" )
+        , ( "ma Elopa", SIMPLE "ma Elopa" "Europe" )
+        , ( "ma Osejanija", SIMPLE "ma Osejanija" "Oceania" )
+        , ( "Amelika", FOREIGN "Amelika" "Americas" )
+        , ( "Antasika", FOREIGN "Amelika" "Antarctica" )
+        , ( "Apika", FOREIGN "Apika" "Africa" )
+        , ( "Asija", FOREIGN "Asija" "Asia" )
+        , ( "Elopa", FOREIGN "Elopa" "Europe" )
+        , ( "Osejanija", FOREIGN "Osejanija" "Oceania" )
+
+        -- Africa
+        , ( "ma Ankola", SIMPLE "ma Ankola" "Angola" )
+        , ( "ma Eliteja", SIMPLE "ma Eliteja" "Eritrea" )
+        , ( "ma Isijopija", SIMPLE "ma Isijopija" "Ethiopia" )
+        , ( "ma Kamelun", SIMPLE "ma Kamelun" "Cameroon" )
+        , ( "ma Kana", SIMPLE "ma Kana" "Ghana" )
+        , ( "ma Kanpija", SIMPLE "ma Kanpija" "Gambia" )
+        , ( "ma Kapon", SIMPLE "ma Kapon" "Gabon" )
+        , ( "ma Kenja", SIMPLE "ma Kenja" "Kenya" )
+        , ( "ma Kilipasi", SIMPLE "ma Kilipasi" "Kiribati" )
+        , ( "ma Kine", SIMPLE "ma Kine" "Guinea" )
+        , ( "ma Kinejekatolija", SIMPLE "ma Kinejekatolija" "Equatorial Guinea" )
+        , ( "ma Kinepisa", SIMPLE "ma Kinepisa" "Guinea-Bissau" )
+        , ( "ma Komo", SIMPLE "ma Komo" "Comoros" )
+        , ( "ma Konko", SIMPLE "ma Konko" "Congo" )
+        , ( "ma Kosiwa", SIMPLE "ma Kosiwa" "Côte d’Ivoire" )
+        , ( "ma Lapewija", SIMPLE "ma Lapewija" "Liberia" )
+        , ( "ma Lesoto", SIMPLE "ma Lesoto" "Lesotho" )
+        , ( "ma Lipija", SIMPLE "ma Lipija" "Libya" )
+        , ( "ma Luwanta", SIMPLE "ma Luwanta" "Rwanda" )
+        , ( "ma Malakasi", SIMPLE "ma Malakasi" "Madagascar" )
+        , ( "ma Malawi", SIMPLE "ma Malawi" "Malawi" )
+        , ( "ma Mali", SIMPLE "ma Mali" "Mali" )
+        , ( "ma Malipe", SIMPLE "ma Malipe" "Morocco" )
+        , ( "ma Masu", SIMPLE "ma Masu" "Egypt" )
+        , ( "ma Mosanpi", SIMPLE "ma Mosanpi" "Mozambique" )
+        , ( "ma Mowisi", SIMPLE "ma Mowisi" "Mauritius" )
+        , ( "ma Mulitanija", SIMPLE "ma Mulitanija" "Mauritania" )
+        , ( "ma Namipija", SIMPLE "ma Namipija" "Namibia" )
+        , ( "ma Naselija", SIMPLE "ma Naselija" "Nigeria" )
+        , ( "ma Nise", SIMPLE "ma Nise" "Niger" )
+        , ( "ma Penen", SIMPLE "ma Penen" "Benin" )
+        , ( "ma Posuwana", SIMPLE "ma Posuwana" "Botswana" )
+        , ( "ma Pukinapaso", SIMPLE "ma Pukinapaso" "Burkina Faso" )
+        , ( "ma Sanpija", SIMPLE "ma Sanpija" "Zambia" )
+        , ( "ma Santapiken", SIMPLE "ma Santapiken" "Central African Republic" )
+        , ( "ma Sasali", SIMPLE "ma Sasali" "Algeria" )
+        , ( "ma Sate", SIMPLE "ma Sate" "Chad" )
+        , ( "ma Sawasi", SIMPLE "ma Sawasi" "Swaziland" )
+        , ( "ma Seneka", SIMPLE "ma Seneka" "Senegal" )
+        , ( "ma Setapika", SIMPLE "ma Setapika" "South Africa" )
+        , ( "ma Sijelalijon", SIMPLE "ma Sijelalijon" "Sierra Leone" )
+        , ( "ma Sinpapuwe", SIMPLE "ma Sinpapuwe" "Zimbabwe" )
+        , ( "ma Sipusi", SIMPLE "ma Sipusi" "Djibouti" )
+        , ( "ma Somalija", SIMPLE "ma Somalija" "Somalia" )
+        , ( "ma Sutan", SIMPLE "ma Sutan" "Sudan" )
+        , ( "ma Tansanija", SIMPLE "ma Tansanija" "Tanzania" )
+        , ( "ma Toko", SIMPLE "ma Toko" "Togo" )
+        , ( "ma Tunisi", SIMPLE "ma Tunisi" "Tunisia" )
+        , ( "ma Ukanta", SIMPLE "ma Ukanta" "Uganda" )
+        , ( "Ankola", FOREIGN "Ankola" "Angola" )
+        , ( "Eliteja", FOREIGN "Eliteja" "Eritrea" )
+        , ( "Isijopija", FOREIGN "Isijopija" "Ethiopia" )
+        , ( "Kamelun", FOREIGN "Kamelun" "Cameroon" )
+        , ( "Kana", FOREIGN "Kana" "Ghana" )
+        , ( "Kanpija", FOREIGN "Kanpija" "Gambia" )
+        , ( "Kapon", FOREIGN "Kapon" "Gabon" )
+        , ( "Kenja", FOREIGN "Kenja" "Kenya" )
+        , ( "Kilipasi", FOREIGN "Kilipasi" "Kiribati" )
+        , ( "Kine", FOREIGN "Kine" "Guinea" )
+        , ( "Kinejekatolija", FOREIGN "Kinejekatolija" "Equatorial Guinea" )
+        , ( "Kinepisa", FOREIGN "Kinepisa" "Guinea-Bissau" )
+        , ( "Komo", FOREIGN "Komo" "Comoros" )
+        , ( "Konko", FOREIGN "Konko" "Congo" )
+        , ( "Kosiwa", FOREIGN "Kosiwa" "Côte d’Ivoire" )
+        , ( "Lapewija", FOREIGN "Lapewija" "Liberia" )
+        , ( "Lesoto", FOREIGN "Lesoto" "Lesotho" )
+        , ( "Lipija", FOREIGN "Lipija" "Libya" )
+        , ( "Luwanta", FOREIGN "Luwanta" "Rwanda" )
+        , ( "Malakasi", FOREIGN "Malakasi" "Madagascar" )
+        , ( "Malawi", FOREIGN "Malawi" "Malawi" )
+        , ( "Mali", FOREIGN "Mali" "Mali" )
+        , ( "Malipe", FOREIGN "Malipe" "Morocco" )
+        , ( "Masu", FOREIGN "Masu" "Egypt" )
+        , ( "Mosanpi", FOREIGN "Mosanpi" "Mozambique" )
+        , ( "Mowisi", FOREIGN "Mowisi" "Mauritius" )
+        , ( "Mulitanija", FOREIGN "Mulitanija" "Mauritania" )
+        , ( "Namipija", FOREIGN "Namipija" "Namibia" )
+        , ( "Naselija", FOREIGN "Naselija" "Nigeria" )
+        , ( "Nise", FOREIGN "Nise" "Niger" )
+        , ( "Penen", FOREIGN "Penen" "Benin" )
+        , ( "Posuwana", FOREIGN "Posuwana" "Botswana" )
+        , ( "Pukinapaso", FOREIGN "Pukinapaso" "Burkina Faso" )
+        , ( "Sanpija", FOREIGN "Sanpija" "Zambia" )
+        , ( "Santapiken", FOREIGN "Santapiken" "Central African Republic" )
+        , ( "Sasali", FOREIGN "Sasali" "Algeria" )
+        , ( "Sate", FOREIGN "Sate" "Chad" )
+        , ( "Sawasi", FOREIGN "Sawasi" "Swaziland" )
+        , ( "Seneka", FOREIGN "Seneka" "Senegal" )
+        , ( "Setapika", FOREIGN "Setapika" "South Africa" )
+        , ( "Sijelalijon", FOREIGN "Sijelalijon" "Sierra Leone" )
+        , ( "Sinpapuwe", FOREIGN "Sinpapuwe" "Zimbabwe" )
+        , ( "Sipusi", FOREIGN "Sipusi" "Djibouti" )
+        , ( "Somalija", FOREIGN "Somalija" "Somalia" )
+        , ( "Sutan", FOREIGN "Sutan" "Sudan" )
+        , ( "Tansanija", FOREIGN "Tansanija" "Tanzania" )
+        , ( "Toko", FOREIGN "Toko" "Togo" )
+        , ( "Tunisi", FOREIGN "Tunisi" "Tunisia" )
+        , ( "Ukanta", FOREIGN "Ukanta" "Uganda" )
+
+        -- Americas
+        , ( "ma Alensina", SIMPLE "ma Alensina" "Argentina" )
+        , ( "ma Awisi", SIMPLE "ma Awisi" "Haiti" )
+        , ( "ma Ekato", SIMPLE "ma Ekato" "Ecuador" )
+
+        --, ( "ma Kalalinuna", SIMPLE "ma Kalalinuna" "Greenland" )
+        , ( "ma Kanata", SIMPLE "ma Kanata" "Canada" )
+        , ( "ma Katemala", SIMPLE "ma Katemala" "Guatemala" )
+        , ( "ma Kenata", SIMPLE "ma Kenata" "Grenada" )
+        , ( "ma Kosalika", SIMPLE "ma Kosalika" "Costa Rica" )
+        , ( "ma Kupa", SIMPLE "ma Kupa" "Cuba" )
+        , ( "ma Mesiko", SIMPLE "ma Mesiko" "Mexico" )
+        , ( "ma Mewika", SIMPLE "ma Mewika" "United States" )
+        , ( "ma Ontula", SIMPLE "ma Ontula" "Honduras" )
+        , ( "ma Palakawi", SIMPLE "ma Palakawi" "Paraguay" )
+        , ( "ma Panama", SIMPLE "ma Panama" "Panama" )
+        , ( "ma Papeto", SIMPLE "ma Papeto" "Barbados" )
+        , ( "ma Pasila", SIMPLE "ma Pasila" "Brasil" )
+        , ( "ma Pawama", SIMPLE "ma Pawama" "Bahamas" )
+        , ( "ma Pelu", SIMPLE "ma Pelu" "Peru" )
+        , ( "ma Pemuta", SIMPLE "ma Pemuta" "Bermuda" )
+        , ( "ma Penesuwela", SIMPLE "ma Penesuwela" "Venezuela" )
+        , ( "ma Sameka", SIMPLE "ma Sameka" "Jamaica" )
+        , ( "ma Sile", SIMPLE "ma Sile" "Chile" )
+        , ( "ma Sinita", SIMPLE "ma Sinita" "Trinidad and Tobago" )
+        , ( "ma Tominika", SIMPLE "ma Tominika" "Dominican Republic" )
+        , ( "ma Ulukawi", SIMPLE "ma Ulukawi" "Uruguay" )
+        , ( "Alensina", FOREIGN "Alensina" "Argentina" )
+        , ( "Awisi", FOREIGN "Awisi" "Haiti" )
+        , ( "Ekato", FOREIGN "Ekato" "Ecuador" )
+
+        --, ( "Kalalinuna", FOREIGN "Kalalinuna" "Greenland" )
+        , ( "Kanata", FOREIGN "Kanata" "Canada" )
+        , ( "Katemala", FOREIGN "Katemala" "Guatemala" )
+        , ( "Kenata", FOREIGN "Kenata" "Grenada" )
+        , ( "Kosalika", FOREIGN "Kosalika" "Costa Rica" )
+        , ( "Kupa", FOREIGN "Kupa" "Cuba" )
+        , ( "Mesiko", FOREIGN "Mesiko" "Mexico" )
+        , ( "Mewika", FOREIGN "Mewika" "United States" )
+        , ( "Ontula", FOREIGN "Ontula" "Honduras" )
+        , ( "Palakawi", FOREIGN "Palakawi" "Paraguay" )
+        , ( "Panama", FOREIGN "Panama" "Panama" )
+        , ( "Papeto", FOREIGN "Papeto" "Barbados" )
+        , ( "Pasila", FOREIGN "Pasila" "Brasil" )
+        , ( "Pawama", FOREIGN "Pawama" "Bahamas" )
+        , ( "Pelu", FOREIGN "Pelu" "Peru" )
+        , ( "Pemuta", FOREIGN "Pemuta" "Bermuda" )
+        , ( "Penesuwela", FOREIGN "Penesuwela" "Venezuela" )
+        , ( "Sameka", FOREIGN "Sameka" "Jamaica" )
+        , ( "Sile", FOREIGN "Sile" "Chile" )
+        , ( "Sinita", FOREIGN "Sinita" "Trinidad and Tobago" )
+        , ( "Tominika", FOREIGN "Tominika" "Dominican Republic" )
+        , ( "Ulukawi", FOREIGN "Ulukawi" "Uruguay" )
+
+        -- Asia
+        , ( "ma Aja", SIMPLE "ma Aja" "Armenia" )
+        , ( "ma Akanisan", SIMPLE "ma Akanisan" "Afghanistan" )
+        , ( "ma Anku", SIMPLE "ma Anku" "South Korea" )
+        , ( "ma Ilakija", SIMPLE "ma Ilakija" "Iraq" )
+        , ( "ma Ilan", SIMPLE "ma Ilan" "Iran" )
+        , ( "ma Intonesija", SIMPLE "ma Intonesija" "Indonesia" )
+        , ( "ma Isale", SIMPLE "ma Isale" "Israel" )
+        , ( "ma Jamanija", SIMPLE "ma Jamanija" "Yemen" )
+        , ( "ma Kanpusi", SIMPLE "ma Kanpusi" "Cambodia" )
+        , ( "ma Katelo", SIMPLE "ma Katelo" "Georgia" )
+        , ( "ma Kuli", SIMPLE "ma Kuli" "Kurdistan" )
+        , ( "ma Kusala", SIMPLE "ma Kusala" "Gujarat" )
+        , ( "ma Kuwasi", SIMPLE "ma Kuwasi" "Kuwait" )
+        , ( "ma Lanka", SIMPLE "ma Lanka" "Sri Lanka" )
+        , ( "ma Losi", SIMPLE "ma Losi" "Russia" )
+        , ( "ma Lunpan", SIMPLE "ma Lunpan" "Lebanon" )
+        , ( "ma Malasija", SIMPLE "ma Malasija" "Malaysia" )
+        , ( "ma Masu", SIMPLE "ma Masu" "Egypt" )
+        , ( "ma Mijama", SIMPLE "ma Mijama" "Myanmar" )
+        , ( "ma Nijon", SIMPLE "ma Nijon" "Japan" )
+        , ( "ma Pakisan", SIMPLE "ma Pakisan" "Pakistan" )
+        , ( "ma Palani", SIMPLE "ma Palani" "Bahrain" )
+        , ( "ma Palata", SIMPLE "ma Palata" "India" )
+        , ( "ma Panla", SIMPLE "ma Panla" "Bangladesh" )
+        , ( "ma Pilipina", SIMPLE "ma Pilipina" "Philippines" )
+        , ( "ma Pilisin", SIMPLE "ma Pilisin" "Palestine" )
+        , ( "ma Po", SIMPLE "ma Po" "Tibet" )
+        , ( "ma Sawusi", SIMPLE "ma Sawusi" "Saudi Arabia" )
+        , ( "ma Sonko", SIMPLE "ma Sonko" "China" )
+        , ( "ma Sulija", SIMPLE "ma Sulija" "Syria" )
+        , ( "ma Tawi", SIMPLE "ma Tawi" "Thailand" )
+        , ( "ma Tuki", SIMPLE "ma Tuki" "Turkey" )
+        , ( "ma Uman", SIMPLE "ma Uman" "Oman" )
+        , ( "ma Utun", SIMPLE "ma Utun" "Jordan" )
+        , ( "ma Wije", SIMPLE "ma Wije" "Vietnam" )
+        , ( "Aja", FOREIGN "Aja" "Armenia" )
+        , ( "Akanisan", FOREIGN "Akanisan" "Afghanistan" )
+        , ( "Anku", FOREIGN "Anku" "South Korea" )
+        , ( "Ilakija", FOREIGN "Ilakija" "Iraq" )
+        , ( "Ilan", FOREIGN "Ilan" "Iran" )
+        , ( "Intonesija", FOREIGN "Intonesija" "Indonesia" )
+        , ( "Isale", FOREIGN "Isale" "Israel" )
+        , ( "Jamanija", FOREIGN "Jamanija" "Yemen" )
+        , ( "Kanpusi", FOREIGN "Kanpusi" "Cambodia" )
+        , ( "Katelo", FOREIGN "Katelo" "Georgia" )
+        , ( "Kuli", FOREIGN "Kuli" "Kurdistan" )
+        , ( "Kusala", FOREIGN "Kusala" "Gujarat" )
+        , ( "Kuwasi", FOREIGN "Kuwasi" "Kuwait" )
+        , ( "Lanka", FOREIGN "Lanka" "Sri Lanka" )
+        , ( "Losi", FOREIGN "Losi" "Russia" )
+        , ( "Lunpan", FOREIGN "Lunpan" "Lebanon" )
+        , ( "Malasija", FOREIGN "Malasija" "Malaysia" )
+        , ( "Masu", FOREIGN "Masu" "Egypt" )
+        , ( "Mijama", FOREIGN "Mijama" "Myanmar" )
+        , ( "Nijon", FOREIGN "Nijon" "Japan" )
+        , ( "Pakisan", FOREIGN "Pakisan" "Pakistan" )
+        , ( "Palani", FOREIGN "Palani" "Bahrain" )
+        , ( "Palata", FOREIGN "Palata" "India" )
+        , ( "Panla", FOREIGN "Panla" "Bangladesh" )
+        , ( "Pilipina", FOREIGN "Pilipina" "Philippines" )
+        , ( "Pilisin", FOREIGN "Pilisin" "Palestine" )
+        , ( "Po", FOREIGN "Po" "Tibet" )
+        , ( "Sawusi", FOREIGN "Sawusi" "Saudi Arabia" )
+        , ( "Sonko", FOREIGN "Sonko" "China" )
+        , ( "Sulija", FOREIGN "Sulija" "Syria" )
+        , ( "Tawi", FOREIGN "Tawi" "Thailand" )
+        , ( "Tuki", FOREIGN "Tuki" "Turkey" )
+        , ( "Uman", FOREIGN "Uman" "Oman" )
+        , ( "Utun", FOREIGN "Utun" "Jordan" )
+        , ( "Wije", FOREIGN "Wije" "Vietnam" )
+
+        -- Europe
+        , ( "ma Alan", SIMPLE "ma Alan" "Ireland" )
+        , ( "ma Antola", SIMPLE "ma Antola" "Andorra" )
+        , ( "ma Elena", SIMPLE "ma Elena" "Greece" )
+        , ( "ma Epanja", SIMPLE "ma Epanja" "Spain" )
+        , ( "ma Esalasi", SIMPLE "ma Esalasi" "Austria" )
+        , ( "ma Esi", SIMPLE "ma Esi" "Estonia" )
+        , ( "ma Esuka", SIMPLE "ma Esuka" "Basque Country" )
+        , ( "ma Inli", SIMPLE "ma Inli" "England" )
+        , ( "ma Isilan", SIMPLE "ma Isilan" "Iceland" )
+        , ( "ma Italija", SIMPLE "ma Italija" "Italy" )
+        , ( "ma Juke", SIMPLE "ma Juke" "United Kingdom" )
+        , ( "ma Kalalinuna", SIMPLE "ma Kalalinuna" "Greenland" )
+        , ( "ma Kanse", SIMPLE "ma Kanse" "France" )
+        , ( "ma Katala", SIMPLE "ma Katala" "Catalan Countries" )
+        , ( "ma Katelo", SIMPLE "ma Katelo" "Georgia" )
+        , ( "ma Kinla", SIMPLE "ma Kinla" "Wales" )
+        , ( "ma Kiposi", SIMPLE "ma Kiposi" "Cyprus" )
+        , ( "ma Lawi", SIMPLE "ma Lawi" "Latvia" )
+        , ( "ma Lijatuwa", SIMPLE "ma Lijatuwa" "Lithuania" )
+        , ( "ma Lisensan", SIMPLE "ma Lisensan" "Liechtenstein" )
+        , ( "ma Lomani", SIMPLE "ma Lomani" "Romania" )
+        , ( "ma Lowasi", SIMPLE "ma Lowasi" "Croatia" )
+        , ( "ma Lowenki", SIMPLE "ma Lowenki" "Slovakia" )
+        , ( "ma Lowensina", SIMPLE "ma Lowensina" "Slovenia" )
+        , ( "ma Lusepu", SIMPLE "ma Lusepu" "Luxembourg" )
+        , ( "ma Maketonija", SIMPLE "ma Maketonija" "Macedonia" )
+        , ( "ma Mosijo", SIMPLE "ma Mosijo" "Hungary" )
+        , ( "ma Motowa", SIMPLE "ma Motowa" "Moldova" )
+        , ( "ma Netelan", SIMPLE "ma Netelan" "Netherlands" )
+        , ( "ma Nosiki", SIMPLE "ma Nosiki" "Norway" )
+        , ( "ma Pelalusi", SIMPLE "ma Pelalusi" "Belarus" )
+        , ( "ma Pesije", SIMPLE "ma Pesije" "Belgium" )
+        , ( "ma Peson", SIMPLE "ma Peson" "Brittany" )
+        , ( "ma Pokasi", SIMPLE "ma Pokasi" "Bulgaria" )
+        , ( "ma Posan", SIMPLE "ma Posan" "Bosnia" )
+        , ( "ma Posuka", SIMPLE "ma Posuka" "Poland" )
+        , ( "ma Potuke", SIMPLE "ma Potuke" "Portugal" )
+        , ( "ma Samalino", SIMPLE "ma Samalino" "San Marino" )
+        , ( "ma Seki", SIMPLE "ma Seki" "Czech" )
+        , ( "ma Sipe", SIMPLE "ma Sipe" "Albania" )
+        , ( "ma Sopisi", SIMPLE "ma Sopisi" "Serbia" )
+        , ( "ma Sukosi", SIMPLE "ma Sukosi" "Scotland" )
+        , ( "ma Sumi", SIMPLE "ma Sumi" "Finland" )
+        , ( "ma Suwasi", SIMPLE "ma Suwasi" "Switzerland" )
+        , ( "ma Tansi", SIMPLE "ma Tansi" "Denmark" )
+        , ( "ma Tosi", SIMPLE "ma Tosi" "Germany" )
+        , ( "ma Ukawina", SIMPLE "ma Ukawina" "Ukraine" )
+        , ( "ma Wasikano", SIMPLE "ma Wasikano" "Vatican" )
+        , ( "ma Wensa", SIMPLE "ma Wensa" "Wensa" )
+        , ( "Alan", FOREIGN "Alan" "Ireland" )
+        , ( "Antola", FOREIGN "Antola" "Andorra" )
+        , ( "Elena", FOREIGN "Elena" "Greece" )
+        , ( "Epanja", FOREIGN "Epanja" "Spain" )
+        , ( "Esalasi", FOREIGN "Esalasi" "Austria" )
+        , ( "Esi", FOREIGN "Esi" "Estonia" )
+        , ( "Esuka", FOREIGN "Esuka" "Basque Country" )
+        , ( "Inli", FOREIGN "Inli" "England" )
+        , ( "Isilan", FOREIGN "Isilan" "Iceland" )
+        , ( "Italija", FOREIGN "Italija" "Italy" )
+        , ( "Juke", FOREIGN "Juke" "United Kingdom" )
+        , ( "Kalalinuna", FOREIGN "Kalalinuna" "Greenland" )
+        , ( "Kanse", FOREIGN "Kanse" "France" )
+        , ( "Katala", FOREIGN "Katala" "Catalan Countries" )
+        , ( "Katelo", FOREIGN "Katelo" "Georgia" )
+        , ( "Kinla", FOREIGN "Kinla" "Wales" )
+        , ( "Kiposi", FOREIGN "Kiposi" "Cyprus" )
+        , ( "Lawi", FOREIGN "Lawi" "Latvia" )
+        , ( "Lijatuwa", FOREIGN "Lijatuwa" "Lithuania" )
+        , ( "Lisensan", FOREIGN "Lisensan" "Liechtenstein" )
+        , ( "Lomani", FOREIGN "Lomani" "Romania" )
+        , ( "Lowasi", FOREIGN "Lowasi" "Croatia" )
+        , ( "Lowenki", FOREIGN "Lowenki" "Slovakia" )
+        , ( "Lowensina", FOREIGN "Lowensina" "Slovenia" )
+        , ( "Lusepu", FOREIGN "Lusepu" "Luxembourg" )
+        , ( "Maketonija", FOREIGN "Maketonija" "Macedonia" )
+        , ( "Mosijo", FOREIGN "Mosijo" "Hungary" )
+        , ( "Motowa", FOREIGN "Motowa" "Moldova" )
+        , ( "Netelan", FOREIGN "Netelan" "Netherlands" )
+        , ( "Nosiki", FOREIGN "Nosiki" "Norway" )
+        , ( "Pelalusi", FOREIGN "Pelalusi" "Belarus" )
+        , ( "Pesije", FOREIGN "Pesije" "Belgium" )
+        , ( "Peson", FOREIGN "Peson" "Brittany" )
+        , ( "Pokasi", FOREIGN "Pokasi" "Bulgaria" )
+        , ( "Posan", FOREIGN "Posan" "Bosnia" )
+        , ( "Posuka", FOREIGN "Posuka" "Poland" )
+        , ( "Potuke", FOREIGN "Potuke" "Portugal" )
+        , ( "Samalino", FOREIGN "Samalino" "San Marino" )
+        , ( "Seki", FOREIGN "Seki" "Czech" )
+        , ( "Sipe", FOREIGN "Sipe" "Albania" )
+        , ( "Sopisi", FOREIGN "Sopisi" "Serbia" )
+        , ( "Sukosi", FOREIGN "Sukosi" "Scotland" )
+        , ( "Sumi", FOREIGN "Sumi" "Finland" )
+        , ( "Suwasi", FOREIGN "Suwasi" "Switzerland" )
+        , ( "Tansi", FOREIGN "Tansi" "Denmark" )
+        , ( "Tosi", FOREIGN "Tosi" "Germany" )
+        , ( "Ukawina", FOREIGN "Ukawina" "Ukraine" )
+        , ( "Wasikano", FOREIGN "Wasikano" "Vatican" )
+        , ( "Wensa", FOREIGN "Wensa" "Wensa" )
+
+        -- Oceania
+        , ( "ma Intonesija", SIMPLE "ma Intonesija" "Indonesia" )
+        , ( "ma Nusilan", SIMPLE "ma Nusilan" "New Zealand" )
+        , ( "ma Oselija", SIMPLE "ma Oselija" "Australia" )
+        , ( "ma Papuwanijukini", SIMPLE "ma Papuwanijukini" "Papua New Guinea" )
+        , ( "ma Pisi", SIMPLE "ma Pisi" "Fiji" )
+        , ( "ma Samowa", SIMPLE "ma Samowa" "Samoa" )
+        , ( "ma Tona", SIMPLE "ma Tona" "Tonga" )
+        , ( "ma Tuwalu", SIMPLE "ma Tuwalu" "Tuvalu" )
+        , ( "ma Wanuwatu", SIMPLE "ma Wanuwatu" "Vanuatu" )
+        , ( "Intonesija", FOREIGN "Intonesija" "Indonesia" )
+        , ( "Nusilan", FOREIGN "Nusilan" "New Zealand" )
+        , ( "Oselija", FOREIGN "Oselija" "Australia" )
+        , ( "Papuwanijukini", FOREIGN "Papuwanijukini" "Papua New Guinea" )
+        , ( "Pisi", FOREIGN "Pisi" "Fiji" )
+        , ( "Samowa", FOREIGN "Samowa" "Samoa" )
+        , ( "Tona", FOREIGN "Tona" "Tonga" )
+        , ( "Tuwalu", FOREIGN "Tuwalu" "Tuvalu" )
+        , ( "Wanuwatu", FOREIGN "Wanuwatu" "Vanuatu" )
+
+        -- Other words
+        , ( "mama meli", SIMPLE "mama meli" "mother" )
+        , ( "mama mije", SIMPLE "mama mije" "father" )
         , ( "mi mute", WORD "mi mute" NOUN_KIND (NOUN "we") NO_PRE_VERB (VERB "to be us") NO_VERB_TRANSITIVE (ADJECTIVE "our") (ADVERB "us") NO_NUMERAL NO_PREP )
         , ( "moku lili", WORD "moku lili" NOUN_KIND (NOUN "nibbling") NO_PRE_VERB (VERB "to nibble") (VERB_TRANSITIVE "to nibble") (ADJECTIVE "nibbled") (ADVERB "nibbling") NO_NUMERAL NO_PREP )
         , ( "ona mute", WORD "ona mute" NOUN_KIND (NOUN "they") NO_PRE_VERB (VERB "to be them") NO_VERB_TRANSITIVE (ADJECTIVE "their") (ADVERB "them") NO_NUMERAL NO_PREP )
@@ -232,8 +725,153 @@ tokiponaLipu =
         , ( "telo kili", WORD "telo kili" NOUN_KIND (NOUN "fruit juice") NO_PRE_VERB (VERB "to be a fruit juice") (VERB_TRANSITIVE "to transform as a fruit juice") (ADJECTIVE "fruity") (ADVERB "fruity") NO_NUMERAL NO_PREP )
         , ( "telo nasa", WORD "telo nasa" NOUN_KIND (NOUN "alcohol; beer, wine") NO_PRE_VERB (VERB "to be an alcohol") (VERB_TRANSITIVE "to transform as an alcohol") (ADJECTIVE "alcoholic") (ADVERB "alcoholic") NO_NUMERAL NO_PREP )
         , ( "telo suli", WORD "telo suli" NOUN_KIND (NOUN "ocean") NO_PRE_VERB BE (VERB_TRANSITIVE "to transform as an ocean") ADJ ADV NO_NUMERAL NO_PREP )
+        , ( "toki luka", SIMPLE "toki luka" "Sign Language" )
+
+        -- Language
+        , ( "toki Alapi", SIMPLE "toki Alapi" "Arabic" )
+        , ( "toki Apikan", SIMPLE "toki Apikan" "Afrikaans" )
+        , ( "toki Awasa", SIMPLE "toki Awasa" "Hausa" )
+        , ( "toki Awisi", SIMPLE "toki Awisi" "Haitian Creole" )
+        , ( "toki Elena", SIMPLE "toki Elena" "Greek" )
+        , ( "toki Epanja", SIMPLE "toki Epanja" "Spanish" )
+        , ( "toki Esi", SIMPLE "toki Esi" "Estonian" )
+        , ( "toki Esuka", SIMPLE "toki Esuka" "Basque" )
+        , ( "toki Inli", SIMPLE "toki Inli" "English" )
+        , ( "toki Insi", SIMPLE "toki Insi" "Hindi" )
+        , ( "toki Intonesija", SIMPLE "toki Intonesija" "Indonesian" )
+        , ( "toki Inu", SIMPLE "toki Inu" "Inuit" )
+        , ( "toki Ipo", SIMPLE "toki Ipo" "Igbo" )
+        , ( "toki Isilan", SIMPLE "toki Isilan" "Icelandic" )
+        , ( "toki Italija", SIMPLE "toki Italija" "Italian" )
+        , ( "toki Iwisi", SIMPLE "toki Iwisi" "Hebrew" )
+        , ( "toki Jolupa", SIMPLE "toki Jolupa" "Yoruba" )
+        , ( "toki Kalike", SIMPLE "toki Kalike" "Scottish Gaelic" )
+        , ( "toki Kanse", SIMPLE "toki Kanse" "French" )
+        , ( "toki Kantun", SIMPLE "toki Kantun" "Cantonese" )
+        , ( "toki Kinla", SIMPLE "toki Kinla" "Welsh" )
+        , ( "toki Lasina", SIMPLE "toki Lasina" "Latin" )
+        , ( "toki Lomani", SIMPLE "toki Lomani" "Romanian" )
+        , ( "toki Losi", SIMPLE "toki Losi" "Russian" )
+        , ( "toki Lowasi", SIMPLE "toki Lowasi" "Croatian" )
+        , ( "toki Mosijo", SIMPLE "toki Mosijo" "Hungarian" )
+        , ( "toki Netelan", SIMPLE "toki Netelan" "Dutch" )
+        , ( "toki Nijon", SIMPLE "toki Nijon" "Japanese" )
+        , ( "toki Nosiki", SIMPLE "toki Nosiki" "Norwegian (Bokmål)" )
+        , ( "toki Nosiki sin", SIMPLE "toki Iwisi" "Norwegian Nynorsk" )
+        , ( "toki Panla", SIMPLE "toki Panla" "Bengali" )
+        , ( "toki Peson", SIMPLE "toki Peson" "Breton" )
+        , ( "toki Pokasi", SIMPLE "toki Pokasi" "Bulgarian" )
+        , ( "toki Posan", SIMPLE "toki Posan" "Bosnian" )
+        , ( "toki Potuke", SIMPLE "toki Potuke" "Portuguese" )
+        , ( "toki Sameka", SIMPLE "toki Sameka" "Jamaican" )
+        , ( "toki Seki", SIMPLE "toki Seki" "Czech" )
+        , ( "toki Sesi", SIMPLE "toki Sesi" "Tsez" )
+        , ( "toki Sikipe", SIMPLE "toki Sikipe" "Albanian" )
+        , ( "toki Sonko", SIMPLE "toki Sonko" "Chinese" )
+        , ( "toki Sopisi", SIMPLE "toki Sopisi" "Serbian" )
+        , ( "toki Sumi", SIMPLE "toki Sumi" "Finnish" )
+        , ( "toki Tansi", SIMPLE "toki Tansi" "Danish" )
+        , ( "toki Topisin", SIMPLE "toki Topisin" "Tok Pisin" )
+        , ( "toki Tosi", SIMPLE "toki Tosi" "German" )
+        , ( "Alapi", FOREIGN "Alapi" "Arabic" )
+        , ( "Apikan", FOREIGN "Apikan" "Afrikaans" )
+        , ( "Awasa", FOREIGN "Awasa" "Hausa" )
+        , ( "Awisi", FOREIGN "Awisi" "Haitian Creole" )
+        , ( "Elena", FOREIGN "Elena" "Greek" )
+        , ( "Epanja", FOREIGN "Epanja" "Spanish" )
+        , ( "Esi", FOREIGN "Esi" "Estonian" )
+        , ( "Esuka", FOREIGN "Esuka" "Basque" )
+        , ( "Inli", FOREIGN "Inli" "English" )
+        , ( "Insi", FOREIGN "Insi" "Hindi" )
+        , ( "Intonesija", FOREIGN "Intonesija" "Indonesian" )
+        , ( "Inu", FOREIGN "Inu" "Inuit" )
+        , ( "Ipo", FOREIGN "Ipo" "Igbo" )
+        , ( "Isilan", FOREIGN "Isilan" "Icelandic" )
+        , ( "Italija", FOREIGN "Italija" "Italian" )
+        , ( "Iwisi", FOREIGN "Iwisi" "Hebrew" )
+        , ( "Jolupa", FOREIGN "Jolupa" "Yoruba" )
+        , ( "Kalike", FOREIGN "Kalike" "Scottish Gaelic" )
+        , ( "Kanse", FOREIGN "Kanse" "French" )
+        , ( "Kantun", FOREIGN "Kantun" "Cantonese" )
+        , ( "Kinla", FOREIGN "Kinla" "Welsh" )
+        , ( "Lasina", FOREIGN "Lasina" "Latin" )
+        , ( "Lomani", FOREIGN "Lomani" "Romanian" )
+        , ( "Losi", FOREIGN "Losi" "Russian" )
+        , ( "Lowasi", FOREIGN "Lowasi" "Croatian" )
+        , ( "Mosijo", FOREIGN "Mosijo" "Hungarian" )
+        , ( "Netelan", FOREIGN "Netelan" "Dutch" )
+        , ( "Nijon", FOREIGN "Nijon" "Japanese" )
+        , ( "Nosiki", FOREIGN "Nosiki" "Norwegian (Bokmål)" )
+        , ( "Nosiki sin", FOREIGN "Iwisi" "Norwegian Nynorsk" )
+        , ( "Panla", FOREIGN "Panla" "Bengali" )
+        , ( "Peson", FOREIGN "Peson" "Breton" )
+        , ( "Pokasi", FOREIGN "Pokasi" "Bulgarian" )
+        , ( "Posan", FOREIGN "Posan" "Bosnian" )
+        , ( "Potuke", FOREIGN "Potuke" "Portuguese" )
+        , ( "Sameka", FOREIGN "Sameka" "Jamaican" )
+        , ( "Seki", FOREIGN "Seki" "Czech" )
+        , ( "Sesi", FOREIGN "Sesi" "Tsez" )
+        , ( "Sikipe", FOREIGN "Sikipe" "Albanian" )
+        , ( "Sonko", FOREIGN "Sonko" "Chinese" )
+        , ( "Sopisi", FOREIGN "Sopisi" "Serbian" )
+        , ( "Sumi", FOREIGN "Sumi" "Finnish" )
+        , ( "Tansi", FOREIGN "Tansi" "Danish" )
+        , ( "Topisin", FOREIGN "Topisin" "Tok Pisin" )
+        , ( "Tosi", FOREIGN "Tosi" "German" )
+
+        -- Constructed languages
+        , ( "toki Apiwili", SIMPLE "toki Apiwili" "Afrihili" )
+        , ( "toki Epelanto", SIMPLE "toki Epelanto" "Esperanto" )
+        , ( "toki Inli pona", SIMPLE "toki Inli pona" "Basic English" )
+        , ( "toki Inota", SIMPLE "toki Inota" "Lingua Ignota" )
+        , ( "toki Intelinwa", SIMPLE "toki Intelinwa" "Interlingua" )
+        , ( "toki Ito", SIMPLE "toki Ito" "Ido" )
+        , ( "toki Kuwenja", SIMPLE "toki Kuwenja" "Quenya" )
+        , ( "toki Latan", SIMPLE "toki Latan" "Láadan" )
+        , ( "toki Losupan", SIMPLE "toki Losupan" "Lojban" )
+        , ( "toki Mansi", SIMPLE "toki Mansi" "Mänti" )
+        , ( "toki Nawi", SIMPLE "toki Nawi" "Na’vi" )
+        , ( "toki Olapi", SIMPLE "toki Olapi" "Volapük" )
+        , ( "toki Palepelen", SIMPLE "toki Palepelen" "Baôleybelen" )
+        , ( "toki Selen", SIMPLE "toki Selen" "Seren" )
+        , ( "toki Semisi", SIMPLE "toki Semisi" "Semitish" )
+        , ( "toki Sinan", SIMPLE "toki Sinan" "Klingon" )
+        , ( "toki Sintalin", SIMPLE "toki Sintalin" "Sindarin" )
+        , ( "toki sitelen Anlasi", SIMPLE "toki sitelen Anlasi" "Unker Non-Linear Writing System" )
+        , ( "toki sitelen Pisinpo", SIMPLE "toki sitelen Pisinpo" "Blissymbols" )
+        , ( "toki Soleso", SIMPLE "toki Soleso" "Solresol" )
+        , ( "toki Soma", SIMPLE "toki Soma" "Somish" )
+        , ( "toki Tolome", SIMPLE "toki Tolome" "Traumae" )
+        , ( "toki Tosulaki", SIMPLE "toki Tosulaki" "Dothraki" )
+        , ( "Apiwili", FOREIGN "Apiwili" "Afrihili" )
+        , ( "Epelanto", FOREIGN "Epelanto" "Esperanto" )
+        , ( "Inli pona", FOREIGN "Inli pona" "Basic English" )
+        , ( "Inota", FOREIGN "Inota" "Lingua Ignota" )
+        , ( "Intelinwa", FOREIGN "Intelinwa" "Interlingua" )
+        , ( "Ito", FOREIGN "Ito" "Ido" )
+        , ( "Kuwenja", FOREIGN "Kuwenja" "Quenya" )
+        , ( "Latan", FOREIGN "Latan" "Láadan" )
+        , ( "Losupan", FOREIGN "Losupan" "Lojban" )
+        , ( "Mansi", FOREIGN "Mansi" "Mänti" )
+        , ( "Nawi", FOREIGN "Nawi" "Na’vi" )
+        , ( "Olapi", FOREIGN "Olapi" "Volapük" )
+        , ( "Palepelen", FOREIGN "Palepelen" "Baôleybelen" )
+        , ( "Selen", FOREIGN "Selen" "Seren" )
+        , ( "Semisi", FOREIGN "Semisi" "Semitish" )
+        , ( "Sinan", FOREIGN "Sinan" "Klingon" )
+        , ( "Sintalin", FOREIGN "Sintalin" "Sindarin" )
+        , ( "sitelen Anlasi", FOREIGN "sitelen Anlasi" "Unker Non-Linear Writing System" )
+        , ( "sitelen Pisinpo", FOREIGN "sitelen Pisinpo" "Blissymbols" )
+        , ( "Soleso", FOREIGN "Soleso" "Solresol" )
+        , ( "Soma", FOREIGN "Soma" "Somish" )
+        , ( "Tolome", FOREIGN "Tolome" "Traumae" )
+        , ( "Tosulaki", FOREIGN "Tosulaki" "Dothraki" )
+
+        -- Other words
         , ( "tomo tawa", WORD "tomo tawa" NOUN_KIND (NOUN "car; vehicle") NO_PRE_VERB BE (VERB_TRANSITIVE "to transform as a vehicle") ADJ NO_ADVERB NO_NUMERAL NO_PREP )
-        , ( "tomo tawa telo", WORD "tomo tawa telo" NOUN_KIND (NOUN "boat") NO_PRE_VERB BE (VERB_TRANSITIVE "to transform as a boat") ADJ NO_ADVERB NO_NUMERAL NO_PREP )
+
+        --, ( "tomo tawa telo", WORD "tomo tawa telo" NOUN_KIND (NOUN "boat") NO_PRE_VERB BE (VERB_TRANSITIVE "to transform as a boat") ADJ NO_ADVERB NO_NUMERAL NO_PREP )
+        , ( "tomo tawa telo", SIMPLE "tomo tawa telo" "boat" )
         , ( "tomo tawa kon", WORD "tomo tawa kon" NOUN_KIND (NOUN "airplane; helicopter, air air vehicle") NO_PRE_VERB BE (VERB_TRANSITIVE "to transform as an air vehicle") ADJ NO_ADVERB NO_NUMERAL NO_PREP )
         , ( "tomo telo", WORD "tomo telo" NOUN_KIND (NOUN "restroom") NO_PRE_VERB (VERB "to be a restroom") (VERB_TRANSITIVE "to transform as a restroom") ADJ NO_ADVERB NO_NUMERAL NO_PREP )
         , ( "tomo toki", WORD "tomo toki" NOUN_KIND (NOUN "chat room") NO_PRE_VERB BE (VERB_TRANSITIVE "to make a chat room with") ADJ NO_ADVERB NO_NUMERAL NO_PREP )
@@ -332,6 +970,25 @@ doPona pona str =
         str
 
 
+getTokipona : WORD -> String
+getTokipona w =
+    case w of
+        ERROR s ->
+            "UNKNOWN"
+
+        PARTICLE tokipona grammar ->
+            tokipona
+
+        SIMPLE tokipona str ->
+            tokipona
+
+        FOREIGN tokipona str ->
+            tokipona
+
+        WORD tokipona defaultKind noun preVerb verb verbTransive adjective adverb num prep ->
+            tokipona
+
+
 getDefaultKind : Bool -> WORD -> String
 getDefaultKind pona w =
     let
@@ -342,6 +999,12 @@ getDefaultKind pona w =
 
                 PARTICLE tokipona grammar ->
                     grammar
+
+                SIMPLE tokipona str ->
+                    str
+
+                FOREIGN tokipona str ->
+                    str
 
                 WORD tokipona defaultKind noun preVerb verb verbTransive adjective adverb num prep ->
                     case defaultKind of
@@ -417,8 +1080,52 @@ getDefaultKind pona w =
 
                                 AS_NOUN ->
                                     "[ERROR: default kind is LOC but there is no NOUN definition]"
+
+                        SIMPLE_KIND ->
+                            "[ERROR: " ++ tokipona ++ " is not a simle word]"
+
+                        FOREIGN_KIND ->
+                            "[ERROR: " ++ tokipona ++ " is not a foreign word]"
     in
     doPona pona result
+
+
+convertSimple2Word : WORD -> WORD
+convertSimple2Word word =
+    case word of
+        SIMPLE tokipona str ->
+            WORD tokipona
+                NOUN_KIND
+                (NOUN str)
+                NO_PRE_VERB
+                (VERB ("to be [" ++ str ++ "]"))
+                (VERB_TRANSITIVE ("to transform as a [" ++ str ++ "]"))
+                (ADJECTIVE ("[" ++ str ++ "] as an adjective"))
+                (ADVERB ("[" ++ str ++ "] as an adverb"))
+                NO_NUMERAL
+                NO_PREP
+
+        _ ->
+            word
+
+
+convertForeign2Word : WORD -> WORD
+convertForeign2Word word =
+    case word of
+        FOREIGN tokipona str ->
+            WORD tokipona
+                ADJECTIVE_KIND
+                (NOUN str)
+                NO_PRE_VERB
+                (VERB ("to be [" ++ str ++ "]"))
+                NO_VERB_TRANSITIVE
+                (ADJECTIVE str)
+                NO_ADVERB
+                NO_NUMERAL
+                NO_PREP
+
+        _ ->
+            word
 
 
 rawTokiponaToString : Bool -> WORD_KIND -> WORD -> String
@@ -429,6 +1136,12 @@ rawTokiponaToString pona kind w =
 
         PARTICLE tokipona grammar ->
             grammar
+
+        SIMPLE tokipona str ->
+            str
+
+        FOREIGN tokipona str ->
+            str
 
         WORD tokipona defaultKind noun preVerb verb verbTransive adjective adverb num prep ->
             case kind of
@@ -505,6 +1218,22 @@ rawTokiponaToString pona kind w =
                         AS_NOUN ->
                             "('" ++ getDefaultKind pona w ++ "' as a noun)"
 
+                SIMPLE_KIND ->
+                    case noun of
+                        NOUN s ->
+                            doPona pona s
+
+                        AS_NOUN ->
+                            "[ERROR: " ++ tokipona ++ " is not a simple word]"
+
+                FOREIGN_KIND ->
+                    case adjective of
+                        ADJECTIVE a ->
+                            doPona pona a
+
+                        ADJ ->
+                            "('" ++ getDefaultKind pona w ++ "' as an adjective)"
+
 
 getKind : WORD -> WORD_KIND
 getKind w =
@@ -514,6 +1243,12 @@ getKind w =
 
         PARTICLE tokipona grammar ->
             GRAMMAR_KIND
+
+        SIMPLE tokipona str ->
+            SIMPLE_KIND
+
+        FOREIGN tokipona str ->
+            FOREIGN_KIND
 
         WORD tokipona defaultKind noun preVerb verb verbTransive adjective adverb num prep ->
             defaultKind

@@ -272,6 +272,7 @@ suite =
             , test "mi tawa kepeken tomo tawa tawa tomo sina" <| \_ -> translateNimiPona "mi tawa kepeken tomo tawa tawa tomo sina" |> equal "I / to go to / with / car / to|for / house / your"
             , test "mi tawa kepeken tomo tawa kon tawa tomo sina" <| \_ -> translateNimiPona "mi tawa kepeken tomo tawa kon tawa tomo sina" |> equal "I / to go to / with / airplane / to|for / house / your"
             , test "mi tawa kepeken tomo tawa telo tawa tomo sina" <| \_ -> translateNimiPona "mi tawa kepeken tomo tawa telo tawa tomo sina" |> equal "I / to go to / with / boat / to|for / house / your"
+            , test "tomo tawa telo" <| \_ -> translateNimiPona "tomo tawa telo" |> equal "boat"
             , test "sina toki e ni tawa mi: sina moku... ... " <| \_ -> translateNimiPona "sina toki e ni tawa mi: sina moku... ... " |> equal "you / to speak / this|that / to|for / I: you / to ingest. . . . . ."
             , test "ona li kama tawa tomo mi." <| \_ -> translateNimiPona "ona li kama tawa tomo mi." |> equal "he|she|it / going to / to go to / house / my."
             , test "mi kama e pakala." <| \_ -> translateNimiPona "mi kama e pakala." |> equal "I / to cause / accident."
@@ -387,6 +388,41 @@ suite =
                 , test "jan lili li ken ala moku e telo nasa." <| \_ -> translateNimiPona "jan lili li ken ala moku e telo nasa." |> equal "child / can / not / to ingest / alcohol."
                 , test "sina kepeken ala kepeken e ni?" <| \_ -> translateNimiPona "sina kepeken ala kepeken e ni?" |> equal "you / to use / not / or / to use / this|that?"
                 , test "sina ken ala ken kama?" <| \_ -> translateNimiPona "sina ken ala ken kama?" |> equal "you / is able to / not / or / is able to / to come?"
+                ]
+            ]
+        , describe
+            "lesson #9 http://tokipona.net/tp/janpije/okamasona9.php"
+            [ test "a" <| \_ -> translateNimiPona "a" |> equal "ah"
+            , test "awen" <| \_ -> translateNimiPona "awen" |> equal "to wait"
+            , test "mama" <| \_ -> translateNimiPona "mama" |> equal "parent"
+            , test "mije" <| \_ -> translateNimiPona "mije" |> equal "man"
+            , test "meli" <| \_ -> translateNimiPona "meli" |> equal "woman"
+            , test "nimi" <| \_ -> translateNimiPona "nimi" |> equal "name"
+            , test "o" <| \_ -> translateNimiPona "o" |> equal "used for vocative and imperative"
+            , describe
+                "gender"
+                [ test "mama meli" <| \_ -> translateNimiPona "mama meli" |> equal "mother"
+                , test "mama mije" <| \_ -> translateNimiPona "mama mije" |> equal "father"
+                , test "mi mama mije" <| \_ -> translateNimiPona "mi mama mije" |> equal "I / to be [father]"
+                , test "mi mama mije sina" <| \_ -> translatePona "mi mama mije sina" |> equal "I / to be a parent / manfully / your"
+                , test "mi mama mije sina v2" <| \_ -> translateNimiPona "mi mama mije sina" |> equal "I / to be [father] / your"
+                , test "mama mije mi" <| \_ -> translateNimiPona "mama mije mi" |> equal "father / my"
+                ]
+            , describe
+                "Countries, Cities, Languages"
+                [ test "ma Wensa li nasa" <| \_ -> translateNimiPona "ma Wensa li nasa" |> equal "Wensa / to be crazy"
+                , test "ma Lowasi li pona lukin" <| \_ -> translateNimiPona "ma Lowasi li pona lukin" |> equal "Croatia / to be beautiful"
+                , test "mi wile tawa ma Netelan" <| \_ -> translateNimiPona "mi wile tawa ma Netelan" |> equal "I / want / to go to / Netherlands"
+                , test "ma tomo Lantan li suli." <| \_ -> translateNimiPona "ma tomo Lantan li suli." |> equal "London / to be big."
+                , test "ma tomo Pelin" <| \_ -> translateNimiPona "ma tomo Pelin" |> equal "Berlin"
+                , test "ma tomo Elena" <| \_ -> translateNimiPona "ma tomo Elena" |> equal "Atlanta"
+                , test "ma tomo Loma" <| \_ -> translateNimiPona "ma tomo Loma" |> equal "Rome"
+                , test "ma Inli li pona." <| \_ -> translateNimiPona "ma Inli li pona." |> equal "England / to be good."
+                , test "toki Inli li pona." <| \_ -> translateNimiPona "toki Inli li pona." |> equal "English / to be good."
+                , test "jan Inli li pona." <| \_ -> translateNimiPona "jan Inli li pona." |> equal "people / English / to be good."
+                , test "meli Italija" <| \_ -> translateNimiPona "meli Italija" |> equal "woman / Italian"
+                , test "mije Epanja" <| \_ -> translateNimiPona "mije Epanja" |> equal "man / Spanish"
+                , test "ma tomo lawa" <| \_ -> translateNimiPona "ma tomo lawa" |> equal "capital"
                 ]
             ]
         , describe

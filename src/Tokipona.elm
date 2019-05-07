@@ -67,10 +67,29 @@ internalTranslate phrases pona nimi =
                     |> String.words
                     |> reduceWithLipu nimi
                     |> List.map getRawTokipona
-                    --|> Just
+                    |> List.map fixSimple
+                    |> List.map fixForeign
                     |> translateTravel
                     |> List.map (itemToString pona)
                     |> String.join " / "
+
+
+fixSimple word =
+    case word of
+        SIMPLE tokipona str ->
+            convertSimple2Word (SIMPLE tokipona str)
+
+        _ ->
+            word
+
+
+fixForeign word =
+    case word of
+        FOREIGN tokipona str ->
+            convertForeign2Word (FOREIGN tokipona str)
+
+        _ ->
+            word
 
 
 ponctuationSupport p phrases pona nimi =
@@ -82,91 +101,40 @@ ponctuationSupport p phrases pona nimi =
 reduceWithLipu : Bool -> List String -> List String
 reduceWithLipu nimi words =
     if nimi then
-        let
-            w =
-                List.head words
-        in
-        case w of
-            Just v ->
-                reduce2 [] v (List.drop 1 (reduce3 [] v (List.drop 1 words)))
-
-            Nothing ->
-                words
+        reduce2 [] <| reduce3 [] words
 
     else
         words
 
 
-reduce3 : List String -> String -> List String -> List String
-reduce3 listHead lastWord listTail =
-    let
-        w =
-            List.head listTail
+reduce3 : List String -> List String -> List String
+reduce3 listHead listTail =
+    case listTail of
+        w1 :: w2 :: w3 :: t ->
+            case Dict.get (w1 ++ " " ++ w2 ++ " " ++ w3) tokiponaLipu of
+                Just wFounded ->
+                    reduce3 (List.append listHead (getTokipona wFounded :: [])) t
 
-        w2 =
-            List.head (List.drop 1 listTail)
-    in
-    case ( w, w2 ) of
-        ( Just v, Just v2 ) ->
-            let
-                tmp =
-                    lastWord ++ " " ++ v ++ " " ++ v2
+                Nothing ->
+                    reduce3 (List.append listHead (w1 :: [])) <| List.drop 1 listTail
 
-                nextT =
-                    List.drop 2 listTail
-
-                nextW =
-                    List.head nextT
-            in
-            if Dict.member tmp tokiponaLipu then
-                case nextW of
-                    Just nextWv ->
-                        reduce3 (List.append listHead (tmp :: [])) nextWv (List.drop 1 nextT)
-
-                    Nothing ->
-                        List.append listHead (tmp :: [])
-
-            else
-                reduce3 (List.append listHead (lastWord :: [])) v (List.drop 1 listTail)
-
-        ( Just v, Nothing ) ->
-            List.append listHead (lastWord :: v :: [])
-
-        ( _, _ ) ->
-            List.append listHead (lastWord :: [])
+        _ ->
+            List.append listHead listTail
 
 
-reduce2 : List String -> String -> List String -> List String
-reduce2 listHead lastWord listTail =
-    let
-        w =
-            List.head listTail
-    in
-    case w of
-        Just v ->
-            let
-                tmp =
-                    lastWord ++ " " ++ v
+reduce2 : List String -> List String -> List String
+reduce2 listHead listTail =
+    case listTail of
+        w1 :: w2 :: t ->
+            case Dict.get (w1 ++ " " ++ w2) tokiponaLipu of
+                Just wFounded ->
+                    reduce2 (List.append listHead (getTokipona wFounded :: [])) t
 
-                nextT =
-                    List.drop 1 listTail
+                Nothing ->
+                    reduce2 (List.append listHead (w1 :: [])) <| List.drop 1 listTail
 
-                nextW =
-                    List.head nextT
-            in
-            if Dict.member tmp tokiponaLipu then
-                case nextW of
-                    Just nextWv ->
-                        reduce2 (List.append listHead (tmp :: [])) nextWv (List.drop 1 nextT)
-
-                    Nothing ->
-                        List.append listHead (tmp :: [])
-
-            else
-                reduce2 (List.append listHead (lastWord :: [])) v nextT
-
-        Nothing ->
-            List.append listHead (lastWord :: [])
+        _ ->
+            List.append listHead listTail
 
 
 type Item
