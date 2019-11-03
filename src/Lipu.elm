@@ -35,6 +35,7 @@ module Lipu exposing
     )
 
 import Dict exposing (Dict, fromList, get)
+import Nimi exposing (nimiPona)
 import Tools exposing (cutList)
 
 
@@ -898,7 +899,11 @@ getRawTokipona word =
                     w
 
                 Nothing ->
-                    ERROR word
+                    if nimiPona word then
+                        FOREIGN word word
+
+                    else
+                        ERROR word
 
 
 word_mi =
@@ -1095,7 +1100,7 @@ convertSimple2Word word =
     case word of
         SIMPLE tokipona str ->
             WORD tokipona
-                NOUN_KIND
+                SIMPLE_KIND
                 (NOUN str)
                 NO_PRE_VERB
                 (VERB ("to be [" ++ str ++ "]"))
@@ -1114,7 +1119,7 @@ convertForeign2Word word =
     case word of
         FOREIGN tokipona str ->
             WORD tokipona
-                ADJECTIVE_KIND
+                FOREIGN_KIND
                 (NOUN str)
                 NO_PRE_VERB
                 (VERB ("to be [" ++ str ++ "]"))

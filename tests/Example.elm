@@ -2,6 +2,7 @@ module Example exposing (suite)
 
 import Expect exposing (Expectation, equal)
 import Fuzz exposing (Fuzzer, int, list, string)
+import Nimi exposing (nimiPona)
 import Test exposing (..)
 import Tokipona exposing (translate, translateNimi, translateNimiPona, translatePona)
 
@@ -423,6 +424,36 @@ suite =
                 , test "meli Italija" <| \_ -> translateNimiPona "meli Italija" |> equal "woman / Italian"
                 , test "mije Epanja" <| \_ -> translateNimiPona "mije Epanja" |> equal "man / Spanish"
                 , test "ma tomo lawa" <| \_ -> translateNimiPona "ma tomo lawa" |> equal "capital"
+                ]
+            , describe
+                "nimiPona's test suite"
+                [ test "a" <| \_ -> nimiPona "a" |> equal False
+                , test "n" <| \_ -> nimiPona "n" |> equal False
+                , test "N" <| \_ -> nimiPona "N" |> equal False
+                , test "[empty]" <| \_ -> nimiPona "" |> equal False
+                , test "A" <| \_ -> nimiPona "A" |> equal True
+                , test "Aa" <| \_ -> nimiPona "Aa" |> equal False
+                , test "An" <| \_ -> nimiPona "An" |> equal True
+                , test "Unpa" <| \_ -> nimiPona "Unpa" |> equal True
+                , test "Unna" <| \_ -> nimiPona "Unna" |> equal False
+                , test "Unma" <| \_ -> nimiPona "Unma" |> equal False
+                , test "ji" <| \_ -> nimiPona "ji" |> equal False
+                , test "ti" <| \_ -> nimiPona "ti" |> equal False
+                , test "wo" <| \_ -> nimiPona "wo" |> equal False
+                , test "wu" <| \_ -> nimiPona "wu" |> equal False
+                , test "Gogol" <| \_ -> nimiPona "Gogol" |> equal True
+                ]
+            , describe
+                "Personal Names"
+                [ test "jan Lewi li utala e jan Ten" <| \_ -> translateNimiPona "jan Lewi li utala e jan Ten" |> equal "people / Lewi / to make bad, to worsen / people / Ten"
+                , test "jan Pentan li pana e sona tawa mi." <| \_ -> translateNimiPona "jan Pentan li pana e sona tawa mi." |> equal "people / Pentan / to give / knowledge / to|for / I."
+                , test "jan Mewi li toki tawa mi" <| \_ -> translateNimiPona "jan Mewi li toki tawa mi" |> equal "people / Mewi / to talk / to|for / I"
+                , test "jan Nesan li musi" <| \_ -> translateNimiPona "jan Nesan li musi" |> equal "people / Nesan / to have|be fun"
+                , test "mi jan Pita" <| \_ -> translateNimiPona "mi jan Pita" |> equal "I / ('people' as a verb or being...) / Pita"
+                , test "ni li Gogol" <| \_ -> translateNimiPona "ni li Gogol" |> equal "this|that / to be [Gogol]"
+                , test "ni li ilo Gogol" <| \_ -> translateNimiPona "ni li ilo Gogol" |> equal "this|that / ('tool' as a verb or being...) / Gogol"
+                , test "ni li ilo Gogol pona" <| \_ -> translateNimiPona "ni li ilo Gogol pona" |> equal "this|that / ('tool' as a verb or being...) / Gogol / well"
+                , test "nimi mi li Pita" <| \_ -> translateNimiPona "nimi mi li Pita" |> equal "name / my / to be [Pita]"
                 ]
             ]
         , describe

@@ -473,7 +473,18 @@ adverbsOrNominalGroup isNominal words =
         List.append (convertWords2Noun True adverbsOrNominal) positions
 
     else
-        List.append (List.map (\word -> ItemWord word ADVERB_KIND) adverbsOrNominal) positions
+        List.append
+            (List.map
+                (\word ->
+                    if getKind word == FOREIGN_KIND then
+                        ItemWord word NOUN_KIND
+
+                    else
+                        ItemWord word ADVERB_KIND
+                )
+                adverbsOrNominal
+            )
+            positions
 
 
 isAlaQuestionForm w words =
